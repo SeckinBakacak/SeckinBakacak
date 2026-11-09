@@ -53,3 +53,16 @@ vertical 9:16, no text
 | 5 | Yedinci kat | — |
 
 Her bölüm yorumlardaki çoğunluğa göre yazılır.
+
+## Otomatik üretim (`uretim/`)
+
+Yeni bölüm için `uretim/bolum01.json` dosyasını kopyala (`bolum02.json`), sahneleri yaz ve çalıştır:
+
+```
+cd kat7/uretim && ./uret.sh bolum02
+```
+
+- `bolumXX.json`: sahneler (`v` görsel, `say` seslendirme, `*kelime*` kırmızı altyazı, `head` üst başlık, `box` diyalog kutusu, `stamp` zaman damgası, `sfx` efekt) ve seçim kartları
+- `ses.py`: ElevenLabs seslendirmesi (Brian, eleven_v4, Türkçe), kelime zamanlamaları, müzik ve efekt miksajı. Ses dosyaları `cache/` klasöründe tutulur, aynı metin için tekrar kredi harcanmaz
+- `sahne.html`: tüm çizimler (SVG) ve altyazı/diyalog katmanları
+- `render.mjs`: kareleri çizip ffmpeg ile 1080x1920 MP4 çıkarır

@@ -1,0 +1,26 @@
+{
+  "baslik": "KAT 7 · BÖLÜM 1",
+  "ses": {"voice_id": "nPczCjzI2devNBz1zQrb", "model_id": "eleven_v4", "language_code": "tr"},
+  "secim": {"sol": ["ASANSÖRE BİN,", "7'YE BAS"], "sag": ["KAYDI GERİ SAR,", "REMZİ'Yİ BUL"]},
+  "sahneler": [
+    {"v": "panel", "head": "ALTI KAT", "say": "Bu apartman *altı* katlı."},
+    {"v": "panel7", "head": "YEDİ DÜĞME", "say": "Ama asansörde *yedi* düğme var."},
+    {"v": "exterior", "stamp": "1. GECE · 23:00", "say": "Sedef Apartmanı'nda gece bekçiliğine bugün başladın."},
+    {"v": "room", "say": "Senden önceki bekçi Remzi Efendi, bir gece kimseye haber vermeden *kaybolmuş*."},
+    {"v": "note", "box": ["REMZİ'NİN NOTU", "03:17'de asansöre bakma. Baksan da kapıyı açma."], "say": "Masaya bir not bırakmış. Üçü on yedi geçe asansöre bakma. Baksan da, kapıyı *açma*."},
+    {"v": "clock", "stamp": "GECE 03:16", "say": "Saat, üçü on altı geçe."},
+    {"v": "mon_empty", "sfx": [["ding", 0.1]], "say": "Monitördeki asansör, kendi kendine *çalışıyor*."},
+    {"v": "mon_up", "say": "Kimse binmedi. Kimse çağırmadı. Ama yukarı çıkıyor."},
+    {"v": "mon_seven", "head": "7. KAT", "headRed": true, "sfx": [["boom", 0.45]], "say": "Altıda durmuyor. *Yedinci* kata çıkıyor."},
+    {"v": "mon_open", "sfx": [["ding", 0.0]], "say": "Kapı açılıyor. Kamera hiçbir şey göstermiyor. Sadece, *karanlık*."},
+    {"v": "elif_door", "say": "Arkandan biri öksürüyor. Üçüncü kattaki küçük Elif. Uyuyamamış."},
+    {"v": "elif_close", "box": ["ELİF", "Amca yine mi geldi?"], "say": "Monitöre bakıp fısıldıyor. Amca yine mi geldi?"},
+    {"v": "hand", "say": "Hangi amca, diye soruyorsun."},
+    {"v": "elif_point", "box": ["ELİF", "Remzi amca. Her gece yedinci kattan iniyor."], "say": "Remzi amca. Her gece *yedinci* kattan iniyor."},
+    {"v": "mon_down", "head": "AŞAĞI İNİYOR", "say": "Asansör aşağı iniyor. Zemin kata. *Senin* olduğun kata."},
+    {"v": "lobby", "sfx": [["ding", 0.0]], "stamp": "LOBİ · 03:17", "say": "Kapının camında bir siluet beliriyor. *Kasketli*."},
+    {"v": "fog", "sfx": [["boom", 0.85]], "say": "Parmağıyla camın buğusuna bir şey yazıyor. *Aç*."},
+    {"v": "black", "head": "KAPIYI AÇMA", "headRed": true, "say": "Notu hatırlıyorsun. Kapıyı açma. Ama asansör, *seni* bekliyor."},
+    {"v": "choice", "nocap": true, "extra": 5.6, "say": "Sen olsan ne yapardın? Yorumlara yaz."}
+  ]
+}

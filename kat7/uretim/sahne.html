@@ -1,0 +1,408 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;background:#000;width:720px;height:1280px;overflow:hidden;font-family:'Inter',sans-serif}
+  #stage{position:relative;width:720px;height:1280px;overflow:hidden}
+  #art{position:absolute;inset:0}
+  .ov{position:absolute;left:0;right:0;text-align:center}
+  #head{top:96px;font-weight:900;font-size:56px;color:#fff;letter-spacing:.5px;
+        -webkit-text-stroke:3px #000;paint-order:stroke fill;text-shadow:0 4px 0 rgba(0,0,0,.6);padding:0 24px}
+  #head.red{color:#ff3434}
+  #cap{top:960px;font-weight:900;font-size:62px;line-height:1.05;color:#fff;padding:0 26px;
+       -webkit-text-stroke:5px #000;paint-order:stroke fill;text-shadow:0 5px 0 rgba(0,0,0,.55)}
+  #cap .on{color:#ffd23f}
+  #cap .red{color:#ff3434}
+  #box{left:40px;right:40px;top:200px;text-align:left}
+  #box .who{font-weight:900;font-size:17px;letter-spacing:1px;margin:0 0 8px 4px}
+  #box .txt{display:inline-block;background:rgba(8,8,12,.86);border-left:6px solid;padding:16px 22px;
+            font-weight:800;font-size:27px;color:#fff;line-height:1.3;border-radius:4px;max-width:600px}
+  #stamp{top:1222px;right:28px;left:auto;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:19px;color:rgba(230,230,230,.65)}
+  #fade{position:absolute;inset:0;background:#000;pointer-events:none}
+</style></head>
+<body><div id="stage">
+  <svg id="art" width="720" height="1280" viewBox="0 0 720 1280"></svg>
+  <div id="head" class="ov"></div>
+  <div id="box" class="ov"></div>
+  <div id="cap" class="ov"></div>
+  <div id="stamp" class="ov"></div>
+  <div id="fade"></div>
+</div>
+<script>
+const W = 720, H = 1280;
+const K = 'stroke="#0d0d12" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"';
+const K4 = 'stroke="#0d0d12" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"';
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = x => x * x * (3 - 2 * x);
+const rnd = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const up = s => s.toLocaleUpperCase('tr-TR');
+let TL = null;
+
+const DEFS = `<defs>
+  <radialGradient id="vig" cx="50%" cy="48%" r="70%"><stop offset="55%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".78"/></radialGradient>
+  <radialGradient id="gRed"><stop offset="0" stop-color="#ff2a2a" stop-opacity=".9"/><stop offset="1" stop-color="#ff2a2a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gGreen"><stop offset="0" stop-color="#3cff9a" stop-opacity=".55"/><stop offset="1" stop-color="#3cff9a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gYel"><stop offset="0" stop-color="#ffe08a" stop-opacity=".55"/><stop offset="1" stop-color="#ffe08a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gMoon"><stop offset="0" stop-color="#e9e4cf" stop-opacity=".45"/><stop offset="1" stop-color="#e9e4cf" stop-opacity="0"/></radialGradient>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070b18"/><stop offset="1" stop-color="#1c2642"/></linearGradient>
+  <linearGradient id="navy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1322"/><stop offset="1" stop-color="#172038"/></linearGradient>
+  <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="2" fill="#000" opacity=".28"/></pattern>
+  <filter id="blur6"><feGaussianBlur stdDeviation="6"/></filter>
+  <filter id="blur14"><feGaussianBlur stdDeviation="14"/></filter>
+  <clipPath id="scr"><rect x="80" y="240" width="560" height="600" rx="26"/></clipPath>
+</defs>`;
+
+function stars(n, seed, ymax) {
+  let s = '';
+  for (let i = 0; i < n; i++) s += `<circle cx="${rnd(seed + i) * W}" cy="${rnd(seed + i + 99) * ymax}" r="${1 + rnd(seed + i + 7) * 2}" fill="#fff" opacity="${.3 + rnd(i + 3) * .6}"/>`;
+  return s;
+}
+function dust(n, t) {
+  let s = '';
+  for (let i = 0; i < n; i++) {
+    const x = (rnd(i) * W + Math.sin(t * .4 + i) * 20) % W, y = (rnd(i + 50) * H + t * (12 + rnd(i + 9) * 25)) % H;
+    s += `<circle cx="${x}" cy="${y}" r="${1.2 + rnd(i + 4) * 2.2}" fill="#fff" opacity="${.2 + rnd(i + 2) * .45}"/>`;
+  }
+  return s;
+}
+
+/* ---------- karakter parçaları ---------- */
+function elifHead(cx, cy, r, look = 0) {
+  const e = r * 0.28, ey = cy + r * 0.12;
+  return `
+  <path d="M${cx - r * 1.08} ${cy + r * .95} Q${cx - r * 1.2} ${cy - r * 1.15} ${cx} ${cy - r * 1.12} Q${cx + r * 1.2} ${cy - r * 1.15} ${cx + r * 1.08} ${cy + r * .95} Z" fill="#2b2433" ${K}/>
+  <circle cx="${cx}" cy="${cy}" r="${r}" fill="#e2b48f" ${K}/>
+  <path d="M${cx - r * .98} ${cy - r * .05} Q${cx - r * .95} ${cy - r * 1.02} ${cx} ${cy - r * 1.02} Q${cx + r * .95} ${cy - r * 1.02} ${cx + r * .98} ${cy - r * .05} L${cx + r * .98} ${cy - r * .32} L${cx - r * .98} ${cy - r * .32} Z" fill="#2b2433"/>
+  <circle cx="${cx - e + look}" cy="${ey}" r="${r * .075}" fill="#111"/><circle cx="${cx + e + look}" cy="${ey}" r="${r * .075}" fill="#111"/>
+  <circle cx="${cx - e * 1.5}" cy="${ey + r * .25}" r="${r * .12}" fill="#e88a80" opacity=".45"/><circle cx="${cx + e * 1.5}" cy="${ey + r * .25}" r="${r * .12}" fill="#e88a80" opacity=".45"/>`;
+}
+function bunny(x, y, s) {
+  return `<g transform="translate(${x} ${y}) scale(${s})">
+    <ellipse cx="-14" cy="-70" rx="10" ry="34" fill="#f2a7c3" ${K4}/><ellipse cx="14" cy="-70" rx="10" ry="34" fill="#f2a7c3" ${K4}/>
+    <circle cx="0" cy="-28" r="26" fill="#f2a7c3" ${K4}/><ellipse cx="0" cy="20" rx="30" ry="34" fill="#f2a7c3" ${K4}/>
+    <circle cx="-9" cy="-30" r="3" fill="#111"/><circle cx="9" cy="-30" r="3" fill="#111"/></g>`;
+}
+function capHead(cx, cy, r, fill) {
+  return `<ellipse cx="${cx}" cy="${cy + r * 2.3}" rx="${r * 2}" ry="${r * 1.1}" fill="${fill}"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}"/>
+    <path d="M${cx - r * 1.05} ${cy - r * .35} Q${cx - r * .9} ${cy - r * 1.25} ${cx + r * .1} ${cy - r * 1.2} Q${cx + r * 1.05} ${cy - r * 1.1} ${cx + r * 1.05} ${cy - r * .35} Z" fill="${fill}"/>
+    <path d="M${cx - r * 1.1} ${cy - r * .35} L${cx + r * 1.65} ${cy - r * .28} L${cx + r * 1.6} ${cy - r * .12} L${cx - r * 1.1} ${cy - r * .18} Z" fill="${fill}"/>`;
+}
+
+/* ---------- monitör ---------- */
+function monitor(kind, p, t, sc) {
+  let num = 1, open = 0, red = false;
+  if (kind === 'up') num = 1 + Math.min(5, Math.floor(p * 6));
+  if (kind === 'seven') { num = p < .45 ? 6 : 7; red = p >= .45; }
+  if (kind === 'open') { num = 7; open = ease(clamp(p * 1.8)); }
+  if (kind === 'down') num = 7 - Math.min(6, Math.floor(p * 7));
+  const flash = red && (p - .45) < .12 ? 1 - (p - .45) / .12 : 0;
+  const secs = Math.floor(t - sc.start) + (kind === 'down' ? 40 : kind === 'open' ? 25 : 4);
+  const ts = `03:17:${String(secs % 60).padStart(2, '0')}`;
+  const dl = 200 - open * 160, dr = 520 + open * 160;
+  const glitch = rnd(Math.floor(t * 8)) > .9 ? `<rect x="80" y="${300 + rnd(Math.floor(t * 8) + 1) * 500}" width="560" height="${6 + rnd(Math.floor(t * 8) + 2) * 18}" fill="#9fffc4" opacity=".18"/>` : '';
+  return `
+  <rect width="720" height="1280" fill="#101219"/>
+  <ellipse cx="360" cy="560" rx="420" ry="460" fill="url(#gGreen)" opacity=".35"/>
+  <rect x="40" y="200" width="640" height="760" rx="40" fill="#b8b2a3" ${K}/>
+  <rect x="80" y="240" width="560" height="600" rx="26" fill="#0c2418"/>
+  <g clip-path="url(#scr)">
+    <polygon points="80,240 640,240 550,330 170,330" fill="#12321f"/>
+    <polygon points="80,240 170,330 170,800 80,860" fill="#163b29"/>
+    <polygon points="640,240 550,330 550,800 640,860" fill="#163b29"/>
+    <polygon points="170,800 550,800 640,860 80,860" fill="#143723"/>
+    <rect x="170" y="330" width="380" height="470" fill="#1d4a33"/>
+    <rect x="200" y="390" width="320" height="410" fill="#000"/>
+    <svg x="200" y="390" width="320" height="410" viewBox="200 390 320 410">
+      <rect x="${dl}" y="390" width="160" height="410" fill="#2c6a49" stroke="#0a1f14" stroke-width="4"/>
+      <rect x="${dr - 160}" y="390" width="160" height="410" fill="#2c6a49" stroke="#0a1f14" stroke-width="4"/>
+    </svg>
+    <rect x="300" y="345" width="120" height="36" fill="#030806" stroke="#0a1f14" stroke-width="3"/>
+    <text x="360" y="374" text-anchor="middle" font-family="JetBrains Mono" font-weight="800" font-size="${red ? 34 : 28}" fill="#ff3b30">${num}</text>
+    ${flash ? `<rect x="80" y="240" width="560" height="600" fill="#ff2020" opacity="${flash * .45}"/>` : ''}
+    ${red ? `<circle cx="360" cy="362" r="70" fill="url(#gRed)" opacity="${.45 + .25 * Math.sin(t * 9)}"/>` : ''}
+    ${glitch}
+    <rect x="80" y="240" width="560" height="600" fill="url(#scan)"/>
+    <text x="104" y="278" font-family="JetBrains Mono" font-weight="700" font-size="18" fill="#9fe8b8">KAM 2 · ASANSÖR</text>
+    ${Math.floor(t * 2) % 2 ? `<circle cx="540" cy="272" r="7" fill="#ff3b30"/>` : ''}
+    <text x="556" y="278" font-family="JetBrains Mono" font-weight="700" font-size="18" fill="#ff8a80">REC</text>
+    <text x="104" y="822" font-family="JetBrains Mono" font-weight="700" font-size="18" fill="#9fe8b8">${ts}</text>
+    <rect x="80" y="240" width="560" height="600" rx="26" fill="url(#vig)"/>
+  </g>
+  <rect x="80" y="240" width="560" height="600" rx="26" fill="none" stroke="#0d0d12" stroke-width="6"/>
+  <circle cx="540" cy="900" r="18" fill="#7a7466" ${K4}/><circle cx="600" cy="900" r="18" fill="#7a7466" ${K4}/>
+  <rect x="110" y="890" width="120" height="16" rx="8" fill="#7a7466" ${K4}/>`;
+}
+
+/* ---------- sahneler ---------- */
+const S = {
+  panel: (p, t) => panelArt(false, t),
+  panel7: (p, t) => panelArt(true, t),
+  exterior(p, t) {
+    let w = '';
+    for (let r = 0; r < 6; r++) for (let c = 0; c < 3; c++) {
+      let lit = (r === 1 && c === 2) || (r === 4 && c === 0);
+      if (r === 0 && c === 1) lit = Math.sin(t * 13) + Math.sin(t * 5.3) > .6;
+      w += `<rect x="${195 + c * 125}" y="${370 + r * 120}" width="80" height="78" fill="${lit ? '#e8c547' : '#1a1e30'}" ${K4}/>`;
+    }
+    return `<rect width="720" height="1280" fill="url(#sky)"/>${stars(60, 3, 600)}
+      <circle cx="590" cy="170" r="140" fill="url(#gMoon)"/><circle cx="590" cy="170" r="48" fill="#e9e4cf" ${K4}/>
+      <rect x="150" y="320" width="420" height="900" fill="#3a3f55" ${K}/>
+      <rect x="135" y="305" width="450" height="30" fill="#2c3043" ${K}/>
+      <rect x="230" y="232" width="260" height="62" rx="6" fill="#c8b98e" ${K}/>
+      <text x="360" y="274" text-anchor="middle" font-weight="900" font-size="28" fill="#2a2016">SEDEF APT.</text>
+      <text x="360" y="292" text-anchor="middle" font-weight="800" font-size="13" fill="#2a2016" opacity=".7">1974</text>
+      ${w}
+      <rect x="305" y="1090" width="110" height="130" fill="#4a3a33" ${K}/><circle cx="395" cy="1160" r="6" fill="#e8c547"/>
+      <rect x="0" y="1215" width="720" height="65" fill="#141725"/>
+      <polygon points="618,770 520,1220 720,1220 720,1000" fill="#ffe08a" opacity=".1"/>
+      <line x1="640" y1="1220" x2="640" y2="760" ${K}/><rect x="606" y="745" width="40" height="26" rx="6" fill="#e8c547" ${K4}/>`;
+  },
+  room(p, t) {
+    let pan = ''; for (let i = 0; i < 9; i++) pan += `<line x1="${i * 90}" y1="0" x2="${i * 90}" y2="900" stroke="#33261f" stroke-width="5"/>`;
+    return `<rect width="720" height="1280" fill="#3b2c25"/>${pan}
+      <rect x="0" y="900" width="720" height="380" fill="#221915"/>
+      <rect x="60" y="200" width="200" height="270" fill="#0f162a" ${K}/><circle cx="210" cy="250" r="22" fill="#e9e4cf" opacity=".8"/>
+      <line x1="160" y1="200" x2="160" y2="470" ${K}/><line x1="60" y1="335" x2="260" y2="335" ${K}/>
+      <line x1="360" y1="0" x2="360" y2="120" stroke="#111" stroke-width="4"/><circle cx="360" cy="135" r="20" fill="#ffe9a8"/>
+      <circle cx="360" cy="135" r="160" fill="url(#gYel)" opacity="${.55 + .08 * Math.sin(t * 20) * (rnd(Math.floor(t * 6)) > .8)}"/>
+      <ellipse cx="480" cy="640" rx="260" ry="220" fill="url(#gGreen)" opacity=".5"/>
+      <rect x="330" y="510" width="300" height="250" rx="18" fill="#b8b2a3" ${K}/>
+      <rect x="355" y="535" width="250" height="185" rx="10" fill="#12301f"/>
+      <rect x="425" y="575" width="110" height="140" fill="#2c6a49" stroke="#0a1f14" stroke-width="3"/><line x1="480" y1="575" x2="480" y2="715" stroke="#0a1f14" stroke-width="3"/>
+      <rect x="355" y="535" width="250" height="185" rx="10" fill="url(#scan)"/>
+      <rect x="40" y="760" width="640" height="40" fill="#5a4033" ${K}/><rect x="70" y="800" width="580" height="260" fill="#4a342a" ${K}/>
+      <line x1="360" y1="820" x2="360" y2="1040" stroke="#3a281f" stroke-width="5"/>
+      <ellipse cx="170" cy="700" rx="60" ry="50" fill="#b03a2e" ${K}/><rect x="150" y="635" width="40" height="18" rx="6" fill="#b03a2e" ${K4}/>
+      <path d="M228 690 Q262 680 270 650" fill="none" stroke="#0d0d12" stroke-width="16" stroke-linecap="round"/><path d="M228 690 Q262 680 270 650" fill="none" stroke="#b03a2e" stroke-width="8" stroke-linecap="round"/>
+      <path d="M256 760 L262 712 L284 712 L290 760 Z" fill="#c4632a" ${K4}/>
+      <polygon points="200,770 250,752 285,768 236,786" fill="#efd98a" ${K4}/>`;
+  },
+  note(p, t) {
+    let g = ''; for (let i = 0; i < 14; i++) g += `<path d="M0 ${i * 95 + 30} Q360 ${i * 95 + 10 + rnd(i) * 40} 720 ${i * 95 + 40}" fill="none" stroke="#4d362b" stroke-width="4"/>`;
+    let l = ''; for (let i = 0; i < 7; i++) l += `<line x1="180" y1="${560 + i * 48}" x2="540" y2="${560 + i * 48}" stroke="#7aa0d8" stroke-width="2" opacity=".5"/>`;
+    let sc = ''; for (let i = 0; i < 4; i++) sc += `<path d="M190 ${598 + i * 48} q30 -14 60 0 t60 0 t60 0 t60 0 t${40 + rnd(i) * 60} 0" fill="none" stroke="#1b2a6b" stroke-width="5" stroke-linecap="round"/>`;
+    return `<rect width="720" height="1280" fill="#5a4033"/>${g}
+      <g transform="rotate(-6 360 640)">
+        <rect x="150" y="380" width="420" height="500" fill="#efd98a" ${K}/>${l}
+        <text x="360" y="525" text-anchor="middle" font-weight="900" font-style="italic" font-size="110" fill="#1b2a6b" transform="skewX(-8)" dx="70">03:17</text>
+        <path d="M200 545 Q360 565 520 540" fill="none" stroke="#c0392b" stroke-width="7" stroke-linecap="round"/>${sc}
+      </g>
+      <g transform="rotate(35 560 1000)"><rect x="500" y="980" width="200" height="26" rx="8" fill="#203a7a" ${K4}/><polygon points="700,980 735,993 700,1006" fill="#e2c69a" ${K4}/></g>`;
+  },
+  clock(p, t, sc) {
+    const m = 16 + (p > .82 ? 1 : 0) - (p > .82 ? Math.max(0, 1 - (p - .82) * 30) : 0);
+    const ma = m * 6, ha = (3 + m / 60) * 30, sa = (t - sc.start) * 6 + 30;
+    let ticks = ''; for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; ticks += `<line x1="${360 + Math.sin(a) * 190}" y1="${600 - Math.cos(a) * 190}" x2="${360 + Math.sin(a) * 215}" y2="${600 - Math.cos(a) * 215}" stroke="#222" stroke-width="${i % 3 ? 5 : 10}"/>`; }
+    const hand = (a, len, w, c) => `<line x1="360" y1="600" x2="${360 + Math.sin(a * Math.PI / 180) * len}" y2="${600 - Math.cos(a * Math.PI / 180) * len}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+    return `<rect width="720" height="1280" fill="#2b2f3d"/>
+      <circle cx="360" cy="600" r="250" fill="#000" opacity=".3" filter="url(#blur14)"/>
+      <circle cx="360" cy="600" r="235" fill="#e9e4d4" stroke="#0d0d12" stroke-width="9"/>${ticks}
+      ${hand(ha, 120, 14, '#151515')}${hand(ma, 185, 9, '#151515')}${hand(sa, 200, 3, '#c0392b')}
+      <circle cx="360" cy="600" r="12" fill="#151515"/>`;
+  },
+  mon_empty: (p, t, sc) => monitor('empty', p, t, sc),
+  mon_up: (p, t, sc) => monitor('up', p, t, sc),
+  mon_seven: (p, t, sc) => monitor('seven', p, t, sc),
+  mon_open: (p, t, sc) => monitor('open', p, t, sc),
+  mon_down: (p, t, sc) => monitor('down', p, t, sc),
+  elif_door(p, t) {
+    return `<rect width="720" height="1280" fill="#2e221d"/>
+      <rect x="190" y="250" width="340" height="960" fill="#07090f" ${K}/>
+      <rect x="170" y="230" width="380" height="20" fill="#4a342a" ${K4}/>
+      <rect x="0" y="1210" width="720" height="70" fill="#1c1411"/>
+      <g transform="translate(0 ${Math.sin(t * 2) * 2})">
+        <rect x="322" y="1040" width="30" height="130" rx="12" fill="#e8c547" ${K4}/><rect x="368" y="1040" width="30" height="130" rx="12" fill="#e8c547" ${K4}/>
+        <ellipse cx="335" cy="1175" rx="26" ry="12" fill="#f2a7c3" ${K4}/><ellipse cx="385" cy="1175" rx="26" ry="12" fill="#f2a7c3" ${K4}/>
+        <rect x="290" y="840" width="140" height="225" rx="44" fill="#e8c547" ${K}/>
+        <circle cx="330" cy="900" r="6" fill="#c9a52c"/><circle cx="380" cy="950" r="6" fill="#c9a52c"/><circle cx="340" cy="1010" r="6" fill="#c9a52c"/>
+        ${bunny(440, 960, .9)}
+        <path d="M410 880 Q450 930 430 980" fill="none" stroke="#0d0d12" stroke-width="26" stroke-linecap="round"/><path d="M410 880 Q450 930 430 980" fill="none" stroke="#e8c547" stroke-width="16" stroke-linecap="round"/>
+        ${elifHead(360, 770, 72, -6)}
+      </g>
+      <rect width="720" height="1280" fill="#3cff9a" opacity=".06"/>
+      <ellipse cx="80" cy="760" rx="300" ry="500" fill="url(#gGreen)" opacity=".5"/>`;
+  },
+  elif_close(p, t) {
+    const sw = Math.sin(t * 1.6) * 3;
+    return `<rect width="720" height="1280" fill="#16241d"/>
+      <ellipse cx="360" cy="1330" rx="340" ry="330" fill="#e8c547" ${K}/>
+      <rect x="320" y="860" width="80" height="90" fill="#d09f7b" ${K}/>
+      <g transform="translate(${sw} 0)">${elifHead(360, 640, 250, -10)}
+        <ellipse cx="360" cy="800" rx="16" ry="20" fill="#3a1a1a"/>
+        <rect x="${360 - 70 - 10 - 6}" y="${640 + 30 - 8}" width="7" height="5" fill="#9fffc4"/><rect x="${360 + 70 - 10 - 6}" y="${640 + 30 - 8}" width="7" height="5" fill="#9fffc4"/>
+      </g>
+      <ellipse cx="0" cy="700" rx="460" ry="700" fill="url(#gGreen)" opacity=".45"/>
+      <rect width="720" height="1280" fill="#3cff9a" opacity=".05"/>`;
+  },
+  hand(p, t) {
+    const k = ease(clamp(p * 1.6));
+    const hx = 250 + 110 * k, hy = 820 - 200 * k;
+    return `<rect width="720" height="1280" fill="#2e221d"/>
+      <ellipse cx="560" cy="560" rx="360" ry="340" fill="url(#gGreen)" opacity=".5"/>
+      <rect x="380" y="330" width="420" height="420" rx="30" fill="#b8b2a3" ${K}/>
+      <rect x="415" y="365" width="360" height="330" rx="18" fill="#0c2418"/>
+      <rect x="500" y="440" width="190" height="255" fill="#2c6a49" stroke="#0a1f14" stroke-width="4"/><line x1="595" y1="440" x2="595" y2="695" stroke="#0a1f14" stroke-width="4"/>
+      <rect x="555" y="395" width="80" height="32" fill="#030806"/><text x="595" y="421" text-anchor="middle" font-family="JetBrains Mono" font-weight="800" font-size="26" fill="#ff3b30">7</text>
+      <rect x="415" y="365" width="360" height="330" rx="18" fill="url(#scan)"/>
+      <line x1="-40" y1="1330" x2="${hx - 30}" y2="${hy + 40}" stroke="#0d0d12" stroke-width="136" stroke-linecap="round"/>
+      <line x1="-40" y1="1330" x2="${hx - 30}" y2="${hy + 40}" stroke="#25324f" stroke-width="124" stroke-linecap="round"/>
+      <line x1="${hx}" y1="${hy}" x2="${hx + 70}" y2="${hy - 62}" stroke="#0d0d12" stroke-width="36" stroke-linecap="round"/>
+      <line x1="${hx}" y1="${hy}" x2="${hx + 70}" y2="${hy - 62}" stroke="#e2b48f" stroke-width="24" stroke-linecap="round"/>
+      <circle cx="${hx}" cy="${hy}" r="52" fill="#e2b48f" ${K}/>`;
+  },
+  elif_point(p, t) {
+    const k = ease(clamp(p * 2));
+    const ax = 400 + 170 * k, ay = 860 - 280 * k;
+    return `<rect width="720" height="1280" fill="#241a1c"/>
+      <rect x="470" y="140" width="220" height="190" rx="16" fill="#b8b2a3" ${K}/><rect x="490" y="160" width="180" height="140" rx="10" fill="#0c2418"/>
+      <text x="580" y="252" text-anchor="middle" font-family="JetBrains Mono" font-weight="800" font-size="70" fill="#ff3b30">7</text>
+      <circle cx="580" cy="230" r="120" fill="url(#gRed)" opacity="${.25 + .15 * Math.sin(t * 7)}"/>
+      <rect x="490" y="160" width="180" height="140" rx="10" fill="url(#scan)"/>
+      <ellipse cx="320" cy="1380" rx="300" ry="440" fill="#e8c547" ${K}/>
+      <line x1="400" y1="980" x2="${ax}" y2="${ay}" stroke="#0d0d12" stroke-width="64" stroke-linecap="round"/>
+      <line x1="400" y1="980" x2="${ax}" y2="${ay}" stroke="#e8c547" stroke-width="52" stroke-linecap="round"/>
+      <circle cx="${ax}" cy="${ay}" r="30" fill="#e2b48f" ${K}/>
+      ${elifHead(300, 700, 170, 18)}<ellipse cx="300" cy="800" rx="22" ry="12" fill="#3a1a1a"/>
+      <ellipse cx="660" cy="300" rx="320" ry="420" fill="url(#gRed)" opacity=".12"/>`;
+  },
+  lobby(p, t) {
+    const a = ease(clamp(p * 1.5)) * .95;
+    let fl = ''; for (let i = -6; i < 12; i++) fl += `<line x1="${i * 90}" y1="1100" x2="${i * 90 + 200}" y2="1280" stroke="#2a2e3b" stroke-width="4"/>`;
+    return `<rect width="720" height="1280" fill="#262a36"/>
+      <rect x="0" y="1100" width="720" height="180" fill="#1b1e28"/>${fl}
+      <rect x="170" y="250" width="380" height="860" fill="#3a3f4d" ${K}/>
+      <rect x="300" y="190" width="120" height="44" fill="#050608" ${K4}/><text x="360" y="224" text-anchor="middle" font-family="JetBrains Mono" font-weight="800" font-size="30" fill="#ff3b30">1</text>
+      <rect x="210" y="280" width="300" height="830" fill="#5b4a40" ${K}/>
+      <rect x="275" y="360" width="170" height="340" fill="#a9b6c9" ${K}/>
+      <svg x="275" y="360" width="170" height="340" viewBox="275 360 170 340"><g opacity="${a}">${capHead(360, 520, 46, '#3a4260')}</g></svg>
+      <rect x="275" y="360" width="170" height="340" fill="#dfe8f5" opacity=".18"/>
+      <rect x="460" y="680" width="22" height="70" rx="6" fill="#d4af37" ${K4}/>
+      <ellipse cx="360" cy="530" rx="260" ry="320" fill="url(#gYel)" opacity=".18"/>`;
+  },
+  fog(p, t) {
+    const rv = clamp((p - .18) / .55);
+    const fx = 150 + 420 * rv, fy = 760 + Math.sin(rv * 18) * 40;
+    return `<rect width="720" height="1280" fill="#5b4a40"/>
+      <rect x="80" y="160" width="560" height="940" fill="#9fadc2" ${K}/>
+      <svg x="80" y="160" width="560" height="940" viewBox="80 160 560 940">
+        <g filter="url(#blur6)" opacity=".85">${capHead(360, 520, 150, '#3e4762')}</g>
+        <rect x="80" y="160" width="560" height="940" fill="#d9e2ee" opacity=".55"/>
+        <clipPath id="rv"><rect x="80" y="160" width="${560 * rv + 10}" height="940"/></clipPath>
+        <g clip-path="url(#rv)">
+          <text x="360" y="880" text-anchor="middle" font-weight="900" font-size="300" fill="#4c5a72" opacity=".9">AÇ</text>
+          <line x1="215" y1="880" x2="215" y2="${880 + 80 * rv}" stroke="#4c5a72" stroke-width="10" stroke-linecap="round" opacity=".7"/>
+          <line x1="470" y1="878" x2="470" y2="${878 + 120 * rv}" stroke="#4c5a72" stroke-width="9" stroke-linecap="round" opacity=".7"/>
+        </g>
+        ${rv > 0 && rv < 1 ? `<circle cx="${fx}" cy="${fy}" r="22" fill="#2f374d" filter="url(#blur6)"/>` : ''}
+      </svg>`;
+  },
+  black(p, t) {
+    const fl = .5 + .5 * Math.sin(t * 17) * (rnd(Math.floor(t * 10)) > .4);
+    return `<rect width="720" height="1280" fill="#000"/>
+      <rect x="210" y="1100" width="300" height="6" fill="#ffe08a" opacity="${.25 * fl}"/>
+      <ellipse cx="360" cy="1104" rx="220" ry="30" fill="url(#gYel)" opacity="${.25 * fl}"/>`;
+  },
+  choice(p, t, sc) {
+    const lt = t - sc.start;
+    const c = TL.choice, b = clamp((lt - .9) / .5);
+    const cd = t - sc.narrEnd - .4;
+    const n = cd < 0 ? 5 : Math.max(1, 5 - Math.floor(cd));
+    const ring = cd < 0 ? 0 : (cd % 1);
+    const arc = (r, f) => { const a = f * 2 * Math.PI; return `M360 ${790 - r} A${r} ${r} 0 ${f > .5 ? 1 : 0} 1 ${360 + r * Math.sin(a)} ${790 - r * Math.cos(a)}`; };
+    const card = (x, col, icon, lines, op) => `<g opacity="${op}"><rect x="${x}" y="420" width="260" height="290" rx="22" fill="#0f1a2b" stroke="${col}" stroke-width="5"/>${icon}
+      <text x="${x + 130}" y="640" text-anchor="middle" font-weight="900" font-size="23" fill="#fff">${lines[0]}</text>
+      <text x="${x + 130}" y="672" text-anchor="middle" font-weight="900" font-size="23" fill="#fff">${lines[1]}</text></g>`;
+    const elev = `<rect x="160" y="460" width="120" height="140" rx="6" fill="none" stroke="#fff" stroke-width="7"/><line x1="220" y1="460" x2="220" y2="600" stroke="#fff" stroke-width="6"/>
+      <polygon points="300,500 318,470 336,500" fill="#4ade80"/><text x="318" y="540" text-anchor="middle" font-weight="900" font-size="34" fill="#4ade80">7</text>`;
+    const rew = `<polygon points="520,530 572,495 572,565" fill="#fff"/><polygon points="470,530 522,495 522,565" fill="#fff"/><rect x="455" y="495" width="12" height="70" fill="#fff"/>
+      <rect x="590" y="482" width="18" height="18" rx="9" fill="none" stroke="#f472b6" stroke-width="4"/>`;
+    return `<rect width="720" height="1280" fill="url(#navy)"/>${dust(45, t)}
+      <text x="360" y="260" text-anchor="middle" font-weight="900" font-size="66" fill="#fff">SEN OLSAN</text>
+      <text x="360" y="340" text-anchor="middle" font-weight="900" font-size="66" fill="#fff">NE YAPARDIN?</text>
+      ${card(90, '#4ade80', elev, c.sol, 1)}${card(370, '#f472b6', rew, c.sag, .3 + .7 * b)}
+      ${cd >= -0.2 ? `<circle cx="360" cy="790" r="40" fill="#0b1220" stroke="#2a3550" stroke-width="7"/>
+        <path d="${arc(40, Math.max(.001, ring))}" fill="none" stroke="#9cc9ff" stroke-width="7" stroke-linecap="round"/>
+        <text x="360" y="805" text-anchor="middle" font-weight="900" font-size="42" fill="#fff">${n}</text>` : ''}
+      <rect x="225" y="870" width="270" height="62" rx="31" fill="#9cc9ff"/><text x="360" y="912" text-anchor="middle" font-weight="900" font-size="27" fill="#0d1424">YORUMA YAZ ↓</text>
+      <rect x="200" y="952" width="320" height="56" rx="28" fill="none" stroke="#e6e9f2" stroke-width="3"/>
+      <text x="360" y="989" text-anchor="middle" font-weight="900" font-size="22" fill="#fff"><tspan fill="#ff4d6d">♥</tspan> BEĞEN · + TAKİP ET</text>
+      <text x="360" y="1210" text-anchor="middle" font-weight="800" font-size="20" fill="#7d879e" letter-spacing="1">${TL.title}</text>`;
+  }
+};
+function panelArt(seven, t) {
+  let b = '';
+  for (let i = 0; i < 7; i++) {
+    const num = 7 - i, cy = 290 + i * 110;
+    if (num === 7) {
+      b += `<circle cx="360" cy="${cy}" r="95" fill="url(#gRed)" opacity="${.45 + .3 * Math.sin(t * 5)}"/>
+        <circle cx="360" cy="${cy}" r="40" fill="#c9ccd3" ${K}/>
+        <g transform="rotate(-8 360 ${cy})"><rect x="262" y="${cy - 32}" width="196" height="64" fill="#d8c79c" opacity=".96" stroke="#0d0d12" stroke-width="4"/>
+        ${seven ? `<text x="360" y="${cy + 22}" text-anchor="middle" font-weight="900" font-style="italic" font-size="60" fill="#1a1a1a">7</text>` : ''}</g>`;
+    } else {
+      b += `<circle cx="360" cy="${cy}" r="40" fill="#c9ccd3" ${K}/><circle cx="360" cy="${cy}" r="30" fill="#b5b9c1"/>
+        <text x="360" y="${cy + 12}" text-anchor="middle" font-weight="900" font-size="34" fill="#2a2d35">${num}</text>`;
+    }
+  }
+  let br = ''; for (let i = 0; i < 24; i++) br += `<line x1="${i * 30}" y1="0" x2="${i * 30}" y2="1280" stroke="#252b3b" stroke-width="2"/>`;
+  return `<rect width="720" height="1280" fill="#1d2230"/>${br}
+    <rect x="180" y="180" width="360" height="860" rx="24" fill="#7d828e" ${K}/><rect x="200" y="200" width="320" height="820" rx="16" fill="#8e939f"/>
+    <circle cx="225" cy="225" r="7" fill="#5d626d"/><circle cx="495" cy="225" r="7" fill="#5d626d"/><circle cx="225" cy="995" r="7" fill="#5d626d"/><circle cx="495" cy="995" r="7" fill="#5d626d"/>${b}`;
+}
+
+/* ---------- ana render ---------- */
+function captionFor(sc, t) {
+  const ws = sc.words; if (!ws.length || sc.nocap) return '';
+  const chunks = []; let cur = [];
+  ws.forEach((w, i) => {
+    cur.push(i);
+    const len = cur.reduce((a, j) => a + ws[j].w.length, 0);
+    if (cur.length >= 3 || /[.,?!:]$/.test(w.w) || len > 15) { chunks.push(cur); cur = []; }
+  });
+  if (cur.length) chunks.push(cur);
+  let ci = -1;
+  chunks.forEach((c, k) => { if (t >= ws[c[0]].s - .05) ci = k; });
+  if (ci < 0) return '';
+  const c = chunks[ci];
+  const last = ws[c[c.length - 1]];
+  if (ci === chunks.length - 1 && t > last.e + .6) return '';
+  return c.map(j => {
+    const w = ws[j], txt = up(w.w.replace(/[.,?!:;]+$/, ''));
+    const cls = w.red ? 'red' : (t >= w.s - .03 ? 'on' : '');
+    return `<span class="${cls}">${txt}</span>`;
+  }).join(' ');
+}
+
+function render(t) {
+  const scs = TL.scenes;
+  let sc = scs[scs.length - 1];
+  for (const s of scs) if (t < s.end) { sc = s; break; }
+  const p = clamp((t - sc.start) / (sc.end - sc.start));
+  const z = 1 + 0.055 * p;
+  const sh = sc.v === 'mon_seven' && p > .45 && p < .55 ? (rnd(Math.floor(t * 40)) - .5) * 16 : 0;
+  document.getElementById('art').innerHTML = DEFS +
+    `<g transform="translate(${360 + sh} 640) scale(${z}) translate(-360 -640)">${S[sc.v](p, t, sc)}</g>
+     <rect width="720" height="1280" fill="url(#vig)"/>`;
+  const head = document.getElementById('head');
+  const hp = clamp((t - sc.start) / .18);
+  head.textContent = sc.head ? up(sc.head) : '';
+  head.className = 'ov' + (sc.headRed ? ' red' : '');
+  head.style.transform = `scale(${.8 + .2 * hp})`; head.style.opacity = hp;
+  const box = document.getElementById('box');
+  if (sc.box) {
+    const col = sc.box[0].startsWith('ELİF') ? '#4ade80' : '#e8c547';
+    box.style.top = (sc.head ? 200 : 150) + 'px';
+    box.style.opacity = clamp((t - sc.start - .25) / .25);
+    box.innerHTML = `<div class="who" style="color:${col}">${sc.box[0]}</div><div class="txt" style="border-color:${col}">“${sc.box[1]}”</div>`;
+  } else box.innerHTML = '';
+  document.getElementById('cap').innerHTML = captionFor(sc, t);
+  document.getElementById('stamp').textContent = sc.stamp ? '◷ ' + sc.stamp : '';
+  const d = Math.min(t - sc.start, sc.end - t);
+  const isFirst = sc === scs[0], isLast = sc === scs[scs.length - 1];
+  let f = d < .1 ? 1 - d / .1 : 0;
+  if (isFirst && t - sc.start < .1) f = 0;
+  if (isLast && sc.end - t < .8) f = 1 - (sc.end - t) / .8;
+  if (t > TL.total - .4) f = 1;
+  document.getElementById('fade').style.opacity = clamp(f);
+}
+window.setTL = (tl) => { TL = tl; };
+</script></body></html>
