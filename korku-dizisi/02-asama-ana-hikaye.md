@@ -334,7 +334,7 @@ Ayla sürünerek kombi dolabına gidiyor, gaz vanasını kapatıyor, pencereleri
 **Ton:** Herkes hayatta. Kefaret.
 
 #### Final 3 — "İÇERİ" (Git + koşup içeri gir)
-Ayla merdivenleri koşarak çıkıyor. Mert arkasından 112'yi arıyor. Ayla nefesini tutup içeri giriyor, pencereleri açıyor ve Kenan'ı sürüklemeye çalışıyor ama başı dönüyor ve koridorda yığılıyor. Mert onu dışarı çekiyor, itfaiye Kenan'a ulaşıyor. Ayla iki gün hastanede kalıyor. Kenan yaşıyor ama karbonmonoksitin kalıcı hasarı yüzünden son bir yılı hatırlamıyor. Nurten'in öldüğünü de.
+Ayla merdivenleri koşarak çıkıyor. Mert arkasından 112'yi arıyor. Ayla nefesini tutup içeri giriyor, pencereleri açıyor ve Kenan'ı sürüklemeye çalışıyor ama başı dönüyor ve koridorda yığılıyor. Mert onu dışarı çekiyor, itfaiye Kenan'a ulaşıyor. Ayla iki gün hastanede kalıyor. Kenan yaşıyor ama karbonmonoksitin kalıcı hasarı yüzünden Nurten'in ölümünden bu yana geçen iki yılı hatırlamıyor. Onun için Nurten hâlâ yaşıyor.
 **Ton:** Cesaretin bedeli. Gerçekçi tıbbi sonuç.
 
 #### Final 4 — "DIŞARIDA" (Git + 112'yi ara)
