@@ -30,8 +30,7 @@
 |---|---|
 | **Sen** — yeni gece bekçisi | hiç yüzü gösterilmez; lacivert bekçi montu, el feneri, sırttan |
 | **Remzi Efendi** — eski bekçi, kayıp | 60'larında, gri bıyık, kasket, kahverengi yelek |
-| **Elif** — 3. kattaki 9 yaşında kız | kısa siyah saç, sarı pijama, elinde peluş tavşan |
-| **Nermin Hanım** — 5. kat, yaşlı dul | beyaz topuz, mor hırka, yuvarlak gözlük |
+| **Nermin Hanım** — yönetici, 5. kat | beyaz topuz, mor hırka, yuvarlak gözlük |
 | **7. kattaki** | asla net gösterilmez; asansör camında yalnızca siluet |
 
 ## Stil promptu (her görsele ekle)
@@ -46,7 +45,7 @@ vertical 9:16, no text
 
 | # | Başlık | Seçim |
 |---|---|---|
-| 1 | Bantlı Düğme | 7'ye bas / Kaydı geri sar |
+| 1 | İki Kural | Asansörü aç / 5. kata koş |
 | 2 | (seçime göre) | — |
 | 3 | Nermin Hanım'ın kapısı | — |
 | 4 | Remzi'nin defteri | — |
