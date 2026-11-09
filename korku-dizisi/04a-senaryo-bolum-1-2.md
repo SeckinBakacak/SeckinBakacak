@@ -67,7 +67,7 @@ Bu kısımda üç bölüm var: **B1**, **B2-A** ve **B2-B**. B3 ve sonrası onay
 - **Karakterler:** Yok
 - **Kamera açısı:** WS, koridorun doğu ucundan girişe (batıya) bakış, göz hizası.
 - **Kamera hareketi:** Termostata doğru çok yavaş ileri kayma (dolly in).
-- **Kompozisyon:** Termostat ekranı (23°C) karenin sol-ortasında tek ışık kaynağı. Üstte alçak tavanda kapağın kenarı **zar zor seçiliyor**, dikkat çekmemeli. Altında ayakkabılık henüz yok (B1'in ilk gecesi değil, 6. gece, bkz. not).
+- **Kompozisyon:** Termostat ekranı (23°C) karenin **sağ**-ortasında tek ışık kaynağı (doğu ucundan batıya bakınca kuzey duvarı sağda kalır). Üstte alçak tavanda kapağın kenarı **zar zor seçiliyor**, dikkat çekmemeli. Altında, sağ duvarda ayakkabılık duruyor (bu, 6. gecenin görüntüsü, bkz. not).
 - **Karakter hareketi:** Yok.
 - **Anlatıcı:** "Termostat yine de değişti." *(4 kelime · 2 sn)*
 - **Diyalog:** —
@@ -725,7 +725,7 @@ Bu kısımda üç bölüm var: **B1**, **B2-A** ve **B2-B**. B3 ve sonrası onay
 - **Karakterler:** Ayla
 - **Kamera açısı:** WS, koridorun doğu ucundan. Ayla banyodan geri geri çıkıyor. Karenin üst kısmında alçak tavan ve **kapağın ince kurum çizgisi, ayakkabılığın tam üstünde** (dikkatli izleyici görebilir).
 - **Kamera hareketi:** Sabit.
-- **Kompozisyon:** Ayla karenin alt-sol bölgesinde, kapak üst-sol bölgesinde. Aralarında yalnızca 60 cm.
+- **Kompozisyon:** Ayla karenin alt-sol bölgesinde (banyo kapısı güney duvarında, doğudan bakınca solda), kapak üst-orta-sağ bölgede, ayakkabılığın üstünde (kuzey duvarı, doğudan bakınca sağda). Aralarında yalnızca bir metre.
 - **Karakter hareketi:** Ayla sırtını duvara dayıyor.
 - **Anlatıcı:** —
 - **Diyalog:** —

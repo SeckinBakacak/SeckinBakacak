@@ -19,6 +19,7 @@ GLOBAL STYLE ve NEGATIVE blokları için bkz. `03a-karakterler-master-prompt.md`
 - Daire 7 binanın **doğu yarısında**. **Sokaktan binaya bakan biri için Daire 7 en üst katın SOL yarısıdır.**
 - Daire içi koordinatlar: x = batıdan doğuya (0 → 10,0), y = güneyden kuzeye (0 → 8,5).
 - **Sabit kural:** Daire 7'ye girince koridor **doğuya** doğru uzanır. Banyo ve kombi dolabı **sağda** (güney), ayakkabılık, termostat ve oturma odası kapısı **solda** (kuzey) kalır.
+- **Ters açı kuralı:** Koridorun doğu ucundan girişe (batıya) bakan planlarda bu taraflar **yer değiştirir**: ayakkabılık, termostat ve oturma odası kapısı kadrajın **SAĞINDA**, banyo ve kombi dolabı **SOLUNDA** görünür. L03 lokasyon bloğu giriş açısına göre yazıldığı için ters açılı planların plan tarifinde bu açıkça belirtilmelidir.
 
 ---
 

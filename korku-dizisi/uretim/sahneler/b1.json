@@ -5,9 +5,22 @@
   "planlar": [
     {
       "id": "B1-S01",
-      "sahne": "S1", "zaman": "0:00–0:04", "sure": 4, "tip": "gorsel",
-      "loc": "L06", "time": "T-GECE",
-      "chars": [["AYLA", "A-GECE"], ["MERT", "M-GECE"]],
+      "sahne": "S1",
+      "zaman": "0:00–0:04",
+      "sure": 4,
+      "tip": "gorsel",
+      "loc": "L06",
+      "time": "T-GECE",
+      "chars": [
+        [
+          "AYLA",
+          "A-GECE"
+        ],
+        [
+          "MERT",
+          "M-GECE"
+        ]
+      ],
       "props": [],
       "kadraj": "extreme close-up of a smartphone lying face-up on a wooden nightstand, the phone in the upper-middle of the vertical frame, a sleeping couple in the bed behind it completely out of focus as soft dark shapes",
       "tarif": "the phone screen has just lit up and casts cold blue-white light on the nightstand surface and on a glass of water, the screen content itself is a plain glowing rectangle (UI will be added in post), the couple breathes peacefully under grey linen bedding, everything else in blue-black darkness",
@@ -19,12 +32,18 @@
     },
     {
       "id": "B1-S02",
-      "sahne": "S2", "zaman": "0:04–0:09", "sure": 5, "tip": "gorsel",
-      "loc": "L03", "time": "T-GECE-0310",
+      "sahne": "S2",
+      "zaman": "0:04–0:09",
+      "sure": 5,
+      "tip": "gorsel",
+      "loc": "L03",
+      "time": "T-GECE-0310",
       "chars": [],
-      "props": ["P-03"],
-      "kadraj": "wide shot at eye level from the far east end of the corridor looking west toward the front door, the thermostat on the LEFT wall in the left-middle of the frame",
-      "tarif": "the thermostat display glowing blue-white is the main light source, the light oak shoe cabinet stands against the left wall in the middle of the corridor directly under the lowered ceiling, the hatch edge in the lowered ceiling is barely perceptible and must not draw attention, the louvered boiler closet and bathroom door on the right wall in deep shadow, faint cold street light leaking through the frosted glass of the living room door on the left",
+      "props": [
+        "P-03"
+      ],
+      "kadraj": "REVERSE VIEW: wide shot at eye level from the far east end of the corridor looking west toward the front door; in this reverse view the thermostat and the shoe cabinet are on the RIGHT wall, the thermostat in the right-middle of the frame",
+      "tarif": "the thermostat display glowing blue-white is the main light source, the light oak shoe cabinet stands against the RIGHT wall in the middle of the corridor directly under the lowered ceiling, the hatch edge in the lowered ceiling is barely perceptible and must not draw attention, the louvered boiler closet and the bathroom door are on the LEFT wall in deep shadow, faint cold street light leaking through the frosted glass of the living room door on the RIGHT wall closer to camera",
       "ek_negatif": "people, figures, silhouettes, open hatch",
       "animasyon": "almost no motion; the thermostat display glow pulses imperceptibly; faint dust particles drift in the thermostat light; the whole image slowly pushes toward the thermostat",
       "kamera": "Termostata doğru çok yavaş ileri kayma, 5 sn'de %6. · very slow dolly-in toward the thermostat, 6% over 5s",
@@ -33,15 +52,31 @@
     },
     {
       "id": "B1-S02-T",
-      "sahne": "S2", "zaman": "0:08,5–0:09", "sure": 1.5, "tip": "grafik",
+      "sahne": "S2",
+      "zaman": "0:08,5–0:09",
+      "sure": 1.5,
+      "tip": "grafik",
       "tarif": "Beyaz zemin (#E8E4DC), ortada ince, aralıklı (tracking +200) gri (#5C6773) büyük harfler: YEDEK ANAHTAR. Animasyon yok, sert giriş ve sert çıkış.",
       "kamera": "—"
     },
     {
       "id": "B1-S03",
-      "sahne": "S3", "zaman": "0:09–0:17", "sure": 8, "tip": "gorsel",
-      "loc": "L01", "time": "T-GÜN",
-      "chars": [["AYLA", "A-DIŞ"], ["MERT", "M-EV"]],
+      "sahne": "S3",
+      "zaman": "0:09–0:17",
+      "sure": 8,
+      "tip": "gorsel",
+      "loc": "L01",
+      "time": "T-GÜN",
+      "chars": [
+        [
+          "AYLA",
+          "A-DIŞ"
+        ],
+        [
+          "MERT",
+          "M-EV"
+        ]
+      ],
       "props": [],
       "kadraj": "tall vertical wide shot from across the street, slight low angle, the two characters small in the lower third of the frame, the full four-storey building facade above them reaching to the top of the frame",
       "tarif": "moving day: MERT, also wearing his dark navy wool overcoat over the hoodie, carries a large cardboard moving box toward the entrance door, AYLA stands holding a potted plant and looks up at the top floor, a few cardboard boxes on the wet cobblestones, the top floor windows on the LEFT half of the facade are dark and curtainless, the corner shop across with its shutter down",
@@ -53,10 +88,21 @@
     },
     {
       "id": "B1-S04a",
-      "sahne": "S4", "zaman": "0:17–0:21", "sure": 4, "tip": "gorsel",
-      "loc": "L02", "time": "T-IŞIK-AÇIK",
-      "chars": [["AYLA", "A-DIŞ"]],
-      "props": ["P-01"],
+      "sahne": "S4",
+      "zaman": "0:17–0:21",
+      "sure": 4,
+      "tip": "gorsel",
+      "loc": "L02",
+      "time": "T-IŞIK-AÇIK",
+      "chars": [
+        [
+          "AYLA",
+          "A-DIŞ"
+        ]
+      ],
+      "props": [
+        "P-01"
+      ],
       "kadraj": "insert close-up from above of AYLA's open right palm (silver ring on index finger, ink smudges on fingertips) receiving a key ring from an older man's hand entering from the top of the frame (only HIKMET's hand and beige trench coat cuff visible, gold signet ring on his LEFT little finger)",
       "tarif": "the three keys rest in her palm, the old worn brass key on top, the tiny stamped letters on it catch the light but are not emphasized, background is the blurred terrazzo landing",
       "ek_negatif": "extra fingers, wrong hand, readable large text",
@@ -67,9 +113,18 @@
     },
     {
       "id": "B1-S04b",
-      "sahne": "S4", "zaman": "0:21–0:26", "sure": 5, "tip": "gorsel",
-      "loc": "L02", "time": "T-IŞIK-AÇIK",
-      "chars": [["HİKMET", "H-ANA"]],
+      "sahne": "S4",
+      "zaman": "0:21–0:26",
+      "sure": 5,
+      "tip": "gorsel",
+      "loc": "L02",
+      "time": "T-IŞIK-AÇIK",
+      "chars": [
+        [
+          "HİKMET",
+          "H-ANA"
+        ]
+      ],
       "props": [],
       "kadraj": "medium close-up of HIKMET framed on the right side of the vertical frame, his eyes NOT looking at the camera or at Ayla but at the door frame of apartment 7 beside him",
       "tarif": "his polite closed-lip smile, prayer beads in his RIGHT hand at chest height, harsh bare bulb top light leaving his eye sockets in shadow, dark green lower wall behind him",
@@ -81,9 +136,18 @@
     },
     {
       "id": "B1-S05a",
-      "sahne": "S5", "zaman": "0:26–0:30", "sure": 4, "tip": "gorsel",
-      "loc": "L02", "time": "T-IŞIK-AÇIK",
-      "chars": [["AYLA", "A-DIŞ"]],
+      "sahne": "S5",
+      "zaman": "0:26–0:30",
+      "sure": 4,
+      "tip": "gorsel",
+      "loc": "L02",
+      "time": "T-IŞIK-AÇIK",
+      "chars": [
+        [
+          "AYLA",
+          "A-DIŞ"
+        ]
+      ],
       "props": [],
       "kadraj": "over-the-shoulder shot from behind AYLA (back of her head and parka hood in the left foreground, out of focus) toward the door of apartment 8 across the landing",
       "tarif": "the dark walnut door marked 8 is open only a few centimeters, held by a brass door chain, through the narrow gap warm honey-yellow light from inside spills onto the cold landing",
@@ -95,9 +159,18 @@
     },
     {
       "id": "B1-S05b",
-      "sahne": "S5", "zaman": "0:30–0:35", "sure": 5, "tip": "gorsel",
-      "loc": "L02", "time": "T-IŞIK-AÇIK",
-      "chars": [["SAADET", "S-EV"]],
+      "sahne": "S5",
+      "zaman": "0:30–0:35",
+      "sure": 5,
+      "tip": "gorsel",
+      "loc": "L02",
+      "time": "T-IŞIK-AÇIK",
+      "chars": [
+        [
+          "SAADET",
+          "S-EV"
+        ]
+      ],
       "props": [],
       "kadraj": "close-up through the chained door gap: only a vertical strip of SAADET's face is visible — one eye magnified behind a thick glasses lens, part of her wrinkled cheek, the yellow measuring tape at her neck, the brass chain crossing the frame",
       "tarif": "she does not smile, her gaze is steady and heavy, warm yellow light behind her, the cold landing light on the door edge",
@@ -109,9 +182,18 @@
     },
     {
       "id": "B1-S06a",
-      "sahne": "S6", "zaman": "0:35–0:39", "sure": 4, "tip": "gorsel",
-      "loc": "L04", "time": "T-GÜN",
-      "chars": [["AYLA", "A-EV"]],
+      "sahne": "S6",
+      "zaman": "0:35–0:39",
+      "sure": 4,
+      "tip": "gorsel",
+      "loc": "L04",
+      "time": "T-GÜN",
+      "chars": [
+        [
+          "AYLA",
+          "A-EV"
+        ]
+      ],
       "props": [],
       "kadraj": "wide shot of the living room from the corridor doorway, the north windows at the back of the frame",
       "tarif": "moving boxes everywhere, AYLA pushes the bottle-green velvet armchair into place IN FRONT OF THE WINDOW, the four faded dark dents in the parquet in front of the bookshelf on the west wall are visible at the bottom edge of the frame but NOT emphasized",
@@ -123,9 +205,18 @@
     },
     {
       "id": "B1-S06b",
-      "sahne": "S6", "zaman": "0:39–0:42", "sure": 3, "tip": "gorsel",
-      "loc": "L04", "time": "T-GÜN",
-      "chars": [["MERT", "M-EV"]],
+      "sahne": "S6",
+      "zaman": "0:39–0:42",
+      "sure": 3,
+      "tip": "gorsel",
+      "loc": "L04",
+      "time": "T-GÜN",
+      "chars": [
+        [
+          "MERT",
+          "M-EV"
+        ]
+      ],
       "props": [],
       "kadraj": "medium shot of MERT kneeling by the bookshelf with a cordless drill, profile view",
       "tarif": "he concentrates on fixing a shelf bracket, screws between his lips, boxes around him",
@@ -137,9 +228,22 @@
     },
     {
       "id": "B1-S06c",
-      "sahne": "S6", "zaman": "0:42–0:45", "sure": 3, "tip": "gorsel",
-      "loc": "L05", "time": "T-GÜN",
-      "chars": [["AYLA", "A-EV"], ["MERT", "M-İŞ"]],
+      "sahne": "S6",
+      "zaman": "0:42–0:45",
+      "sure": 3,
+      "tip": "gorsel",
+      "loc": "L05",
+      "time": "T-GÜN",
+      "chars": [
+        [
+          "AYLA",
+          "A-EV"
+        ],
+        [
+          "MERT",
+          "M-İŞ"
+        ]
+      ],
       "props": [],
       "kadraj": "medium close-up two-shot in the kitchen in the early morning, both standing at the counter",
       "tarif": "AYLA presses two fingers against her temple with her eyes squinting, MERT dressed for 'work' drinks a glass of water and rubs his forehead, both look tired, cold grey morning light from the courtyard window",
@@ -151,10 +255,16 @@
     },
     {
       "id": "B1-S07a",
-      "sahne": "S7", "zaman": "0:45–0:49", "sure": 4, "tip": "gorsel",
-      "loc": "L05", "time": "T-GÜN",
+      "sahne": "S7",
+      "zaman": "0:45–0:49",
+      "sure": 4,
+      "tip": "gorsel",
+      "loc": "L05",
+      "time": "T-GÜN",
       "chars": [],
-      "props": ["P-02"],
+      "props": [
+        "P-02"
+      ],
       "kadraj": "insert shot of the mug on the grey countertop, centered, at counter height",
       "tarif": "the cream mug with the thin navy rim has its cracked handle pointing to the LEFT, pale overcast morning light from the window, white subway tiles out of focus behind",
       "ek_negatif": "handle pointing right, hands",
@@ -165,10 +275,16 @@
     },
     {
       "id": "B1-S07b",
-      "sahne": "S7", "zaman": "0:49–0:52", "sure": 3, "tip": "gorsel",
-      "loc": null, "time": null,
+      "sahne": "S7",
+      "zaman": "0:49–0:52",
+      "sure": 3,
+      "tip": "gorsel",
+      "loc": null,
+      "time": null,
       "chars": [],
-      "props": ["P-04"],
+      "props": [
+        "P-04"
+      ],
       "kadraj": "full-frame insert of an open sketchbook page, top-down",
       "tarif": "a precise pencil drawing of the same kitchen counter from yesterday, the same mug drawn with its handle pointing to the RIGHT, small handwritten date in the corner (illegible), clean graphite linework on off-white paper",
       "ek_negatif": "handle pointing left, colored drawing, readable text",
@@ -179,10 +295,21 @@
     },
     {
       "id": "B1-S07c",
-      "sahne": "S7", "zaman": "0:52–0:55", "sure": 3, "tip": "gorsel",
-      "loc": "L05", "time": "T-GÜN",
-      "chars": [["AYLA", "A-EV"]],
-      "props": ["P-02"],
+      "sahne": "S7",
+      "zaman": "0:52–0:55",
+      "sure": 3,
+      "tip": "gorsel",
+      "loc": "L05",
+      "time": "T-GÜN",
+      "chars": [
+        [
+          "AYLA",
+          "A-EV"
+        ]
+      ],
+      "props": [
+        "P-02"
+      ],
       "kadraj": "close-up of AYLA's right hand (silver ring, ink smudges) turning the mug handle back to the right",
       "tarif": "only the hand, the cardigan sleeve cuff and the mug in frame, the hand stops and rests on the mug for a moment",
       "ek_negatif": "extra fingers",
@@ -193,9 +320,22 @@
     },
     {
       "id": "B1-S08a",
-      "sahne": "S8", "zaman": "0:55–1:00", "sure": 5, "tip": "gorsel",
-      "loc": "L03", "time": "T-GÜN",
-      "chars": [["AYLA", "A-EV"], ["MERT", "M-İŞ"]],
+      "sahne": "S8",
+      "zaman": "0:55–1:00",
+      "sure": 5,
+      "tip": "gorsel",
+      "loc": "L03",
+      "time": "T-GÜN",
+      "chars": [
+        [
+          "AYLA",
+          "A-EV"
+        ],
+        [
+          "MERT",
+          "M-İŞ"
+        ]
+      ],
       "props": [],
       "kadraj": "wide shot from the front door looking east down the corridor",
       "tarif": "the light oak shoe cabinet has been dragged from beside the door to the middle of the corridor against the LEFT (north) wall, exactly under the lowered ceiling, AYLA stands next to it with one hand on its top, MERT in his navy overcoat and backpack walks past her toward the camera and the front door without looking at her, the thermostat on the left wall further back",
@@ -207,8 +347,12 @@
     },
     {
       "id": "B1-S08b",
-      "sahne": "S8", "zaman": "1:00–1:03", "sure": 3, "tip": "gorsel",
-      "loc": "L03", "time": "T-GÜN",
+      "sahne": "S8",
+      "zaman": "1:00–1:03",
+      "sure": 3,
+      "tip": "gorsel",
+      "loc": "L03",
+      "time": "T-GÜN",
       "chars": [],
       "props": [],
       "kadraj": "insert of the oak herringbone parquet close to the floor",
@@ -221,8 +365,12 @@
     },
     {
       "id": "B1-S08c",
-      "sahne": "S8", "zaman": "1:03–1:06", "sure": 3, "tip": "gorsel",
-      "loc": "L03", "time": "T-GÜN",
+      "sahne": "S8",
+      "zaman": "1:03–1:06",
+      "sure": 3,
+      "tip": "gorsel",
+      "loc": "L03",
+      "time": "T-GÜN",
       "chars": [],
       "props": [],
       "kadraj": "POV looking straight up at the low white corridor ceiling at 2.10 m",
@@ -235,10 +383,21 @@
     },
     {
       "id": "B1-S09a",
-      "sahne": "S9", "zaman": "1:06–1:12", "sure": 6, "tip": "gorsel",
-      "loc": "L08", "time": null,
-      "chars": [["AYLA", "A-EV"]],
-      "props": ["P-04"],
+      "sahne": "S9",
+      "zaman": "1:06–1:12",
+      "sure": 6,
+      "tip": "gorsel",
+      "loc": "L08",
+      "time": null,
+      "chars": [
+        [
+          "AYLA",
+          "A-EV"
+        ]
+      ],
+      "props": [
+        "P-04"
+      ],
       "kadraj": "wide shot of the study wall covered with a grid of twelve pinned pencil sketches (four days × three rooms), AYLA at the right edge of the frame half turned away, wearing her round reading glasses",
       "tarif": "warm desk lamp light mixed with cold daylight from the south window, the sketches show the corridor, the kitchen and the living room from the same angles day after day",
       "ek_negatif": "readable text, colorful drawings",
@@ -249,8 +408,12 @@
     },
     {
       "id": "B1-S09b",
-      "sahne": "S9", "zaman": "1:12–1:17", "sure": 5, "tip": "gorsel",
-      "loc": "L08", "time": null,
+      "sahne": "S9",
+      "zaman": "1:12–1:17",
+      "sure": 5,
+      "tip": "gorsel",
+      "loc": "L08",
+      "time": null,
       "chars": [],
       "props": [],
       "kadraj": "three quick inserts of individual sketches, each filling the frame",
@@ -263,9 +426,22 @@
     },
     {
       "id": "B1-S10",
-      "sahne": "S10", "zaman": "1:17–1:26", "sure": 9, "tip": "gorsel",
-      "loc": "L04", "time": "T-AKŞAM",
-      "chars": [["AYLA", "A-EV"], ["MERT", "M-EV"]],
+      "sahne": "S10",
+      "zaman": "1:17–1:26",
+      "sure": 9,
+      "tip": "gorsel",
+      "loc": "L04",
+      "time": "T-AKŞAM",
+      "chars": [
+        [
+          "AYLA",
+          "A-EV"
+        ],
+        [
+          "MERT",
+          "M-EV"
+        ]
+      ],
       "props": [],
       "kadraj": "low angle close to the floor: AYLA on her knees in the foreground taping strips of painter's tape on the parquet around the legs of the green armchair in front of the window; MERT out of focus in the background on the sofa",
       "tarif": "Mert's face lit by his phone screen, the phone shows a blurry job listing website layout (unreadable), a single warm floor lamp, the windows deep blue behind",
@@ -277,10 +453,16 @@
     },
     {
       "id": "B1-S11",
-      "sahne": "S11", "zaman": "1:26–1:33", "sure": 7, "tip": "gorsel",
-      "loc": "L03", "time": "T-GECE-0310",
+      "sahne": "S11",
+      "zaman": "1:26–1:33",
+      "sure": 7,
+      "tip": "gorsel",
+      "loc": "L03",
+      "time": "T-GECE-0310",
       "chars": [],
-      "props": ["P-03"],
+      "props": [
+        "P-03"
+      ],
       "kadraj": "close-up of the thermostat display centered in the frame, everything around it pure black",
       "tarif": "the backlit display shows the digits, cold blue-white glow on a tiny area of wall",
       "ek_negatif": "hands, people, other light sources",
@@ -291,9 +473,18 @@
     },
     {
       "id": "B1-S12a",
-      "sahne": "S12", "zaman": "1:33–1:36", "sure": 3, "tip": "gorsel",
-      "loc": "L04", "time": "T-GÜN",
-      "chars": [["AYLA", "A-GECE"]],
+      "sahne": "S12",
+      "zaman": "1:33–1:36",
+      "sure": 3,
+      "tip": "gorsel",
+      "loc": "L04",
+      "time": "T-GÜN",
+      "chars": [
+        [
+          "AYLA",
+          "A-GECE"
+        ]
+      ],
       "props": [],
       "kadraj": "medium shot of AYLA standing in the living room doorway holding a coffee cup, seen from inside the room",
       "tarif": "she wears pajamas with the ochre cardigan over her shoulders, her face freezes as she looks toward the window",
@@ -305,8 +496,12 @@
     },
     {
       "id": "B1-S12b",
-      "sahne": "S12", "zaman": "1:36–1:39", "sure": 3, "tip": "gorsel",
-      "loc": "L04", "time": "T-GÜN",
+      "sahne": "S12",
+      "zaman": "1:36–1:39",
+      "sure": 3,
+      "tip": "gorsel",
+      "loc": "L04",
+      "time": "T-GÜN",
       "chars": [],
       "props": [],
       "kadraj": "insert of the parquet in front of the window from slightly above",
@@ -319,8 +514,12 @@
     },
     {
       "id": "B1-S12c",
-      "sahne": "S12", "zaman": "1:39–1:43", "sure": 4, "tip": "gorsel",
-      "loc": "L04", "time": "T-GÜN",
+      "sahne": "S12",
+      "zaman": "1:39–1:43",
+      "sure": 4,
+      "tip": "gorsel",
+      "loc": "L04",
+      "time": "T-GÜN",
       "chars": [],
       "props": [],
       "kadraj": "very low tracking shot along the parquet surface",
@@ -333,10 +532,16 @@
     },
     {
       "id": "B1-S12d",
-      "sahne": "S12", "zaman": "1:43–1:46", "sure": 3, "tip": "gorsel",
-      "loc": "L04", "time": "T-GÜN",
+      "sahne": "S12",
+      "zaman": "1:43–1:46",
+      "sure": 3,
+      "tip": "gorsel",
+      "loc": "L04",
+      "time": "T-GÜN",
       "chars": [],
-      "props": ["FOTO:F-1"],
+      "props": [
+        "FOTO:F-1"
+      ],
       "kadraj": "wide shot of the green velvet armchair standing in front of the white bookshelf on the west wall",
       "tarif": "the armchair sits at exactly the same position and angle as in photograph F-1 (the old couple's photo), slightly angled toward the room, the empty tape rectangle by the window visible in the background",
       "ek_negatif": "people, armchair by the window",
@@ -347,9 +552,18 @@
     },
     {
       "id": "B1-S12e",
-      "sahne": "S12", "zaman": "1:46–1:50", "sure": 4, "tip": "gorsel",
-      "loc": "L04", "time": "T-GÜN",
-      "chars": [["AYLA", "A-GECE"]],
+      "sahne": "S12",
+      "zaman": "1:46–1:50",
+      "sure": 4,
+      "tip": "gorsel",
+      "loc": "L04",
+      "time": "T-GÜN",
+      "chars": [
+        [
+          "AYLA",
+          "A-GECE"
+        ]
+      ],
       "props": [],
       "kadraj": "extreme close-up at floor level of one armchair leg and AYLA's right hand lifting it",
       "tarif": "under the lifted leg a faded dark round dent in the parquet; the leg is then lowered and fits perfectly into the dent",
@@ -361,9 +575,18 @@
     },
     {
       "id": "B1-S13",
-      "sahne": "S13", "zaman": "1:50–1:58", "sure": 8, "tip": "gorsel",
-      "loc": "L04", "time": "T-GÜN",
-      "chars": [["AYLA", "A-GECE"]],
+      "sahne": "S13",
+      "zaman": "1:50–1:58",
+      "sure": 8,
+      "tip": "gorsel",
+      "loc": "L04",
+      "time": "T-GÜN",
+      "chars": [
+        [
+          "AYLA",
+          "A-GECE"
+        ]
+      ],
       "props": [],
       "kadraj": "high angle from near the ceiling looking down at AYLA kneeling small by the armchair, the composition continues upward to the open double glass door of the corridor where the low corridor ceiling sits in darkness",
       "tarif": "grey morning light in the living room gradually gives way to the dark corridor in the upper part of the frame",
@@ -375,9 +598,18 @@
     },
     {
       "id": "B1-S14",
-      "sahne": "S14", "zaman": "1:58–2:12", "sure": 14, "tip": "gorsel+grafik",
-      "loc": "L04", "time": "T-GÜN",
-      "chars": [["AYLA", "A-GECE"]],
+      "sahne": "S14",
+      "zaman": "1:58–2:12",
+      "sure": 14,
+      "tip": "gorsel+grafik",
+      "loc": "L04",
+      "time": "T-GÜN",
+      "chars": [
+        [
+          "AYLA",
+          "A-GECE"
+        ]
+      ],
       "props": [],
       "kadraj": "close-up of AYLA's face, three-quarter front, kneeling on the floor",
       "tarif": "her expression: frozen fear mixed with realization, lips slightly parted, grey morning light — this frame will be blurred and darkened under the choice card",
