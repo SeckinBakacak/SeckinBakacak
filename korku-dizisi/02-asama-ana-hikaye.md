@@ -143,7 +143,7 @@ Her A/B seçimi bir sonraki bölümü belirliyor ve **kalıcı bir bayrak** bır
 
 Toplam önceden planlanan bölüm versiyonu: **1 + 2 + 2 + 2 + 2 + 2 + 4 = 15.** Yayında yalnızca seçilen 7 bölüm üretilir.
 
-Zaman çizelgesi: B1 1–6 Kasım · B2 7–8 Kasım · B3 9–10 Kasım · B4 11–12 Kasım · B5 13 Kasım · B6 13'ü 14'üne bağlayan gece · B7 14 Kasım + sonsöz (14 Ocak 2027).
+Zaman çizelgesi (Aşama 4'te kesinleşti): B1 1–6 Kasım · B2 7–8 Kasım · B3 9 Kasım ve 9'u 10'una bağlayan gece · B4 11 Kasım gündüz · **B5-A** 11 Kasım akşamı → B6 11'i 12'sine bağlayan gece · **B5-B** 11 Kasım akşamı – 12 Kasım → B6 12'yi 13'üne bağlayan gece · B7 ertesi sabah + sonsöz (14 Ocak 2027).
 
 ---
 
@@ -302,7 +302,7 @@ Zaman çizelgesi: B1 1–6 Kasım · B2 7–8 Kasım · B3 9–10 Kasım · B4 1
 - Ayla: *"Kenan Bey."* Kenan dönüyor. Gözleri bulanık: *"Üşüyor… kaloriferi kim kıstı?"* Termostatı 28°C'ye çeviriyor ve kombi gürleyerek çalışıyor.
 - Kenan sendeliyor ve duvara yaslanarak yere kayıyor.
 - Ayla ayağa kalkıyor, oda dönüyor. Mert'i sarsıyor ama Mert uyanmıyor.
-**Anlatıcı:** *"Ayla'nın başındaki ağrı on üç gündür aynı yerdeydi. Kombinin alevi turuncuydu. Ve o evde rengi, kokusu, sesi olmayan bir şey, her gece biraz daha birikiyordu."*
+**Anlatıcı:** *"Ayla'nın başındaki ağrı, taşındıkları günden beri aynı yerdeydi. Kombinin alevi turuncuydu. Ve o evde rengi, kokusu, sesi olmayan bir şey, her gece biraz daha birikiyordu."*
 - **Cliffhanger:** Ayla dizlerinin üstünde, baygın Mert ile yerdeki Kenan arasında.
 
 **SEÇİM 6:** **A — Mert'i sürükle ve dışarı çık.** / **B — Önce kombiyi kapat, pencereleri aç.**
@@ -311,7 +311,7 @@ Zaman çizelgesi: B1 1–6 Kasım · B2 7–8 Kasım · B3 9–10 Kasım · B4 1
 **Bayrak:** `GECE=git`
 
 - Ayla ve Mert gece arabada, sokağın karşısında, 3. kattaki kendi pencerelerinin tam karşısında kalıyor. *(Yeni mekân yok, sokak B1'den beri tanıdık.)*
-- 01:30'da Ayla fark ediyor: **Başı ağrımıyor.** On üç gündür ilk kez. Mert'in de ağrımıyor.
+- 01:30'da Ayla fark ediyor: **Başı ağrımıyor.** Taşındıkları günden beri ilk kez. Mert'in de ağrımıyor.
 - Telefonuna "evden çıkınca geçen baş ağrısı" yazıyor. İlk sonuç: **karbonmonoksit zehirlenmesi.**
 - Hafıza parçaları: Saadet'in *"kaloriferi kısma"*sı, *`KAYNAK=Hikmet` ise* turuncu alev, *`ARAMA=içeri` ise* bantlı baca borusu.
 - **03:10:** Telefonda termostat bildirimi: *"Manuel ayar · 19°C → 28°C."*

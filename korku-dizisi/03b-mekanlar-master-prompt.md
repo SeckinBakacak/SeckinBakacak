@@ -235,7 +235,7 @@ scattered sketches of the apartment's rooms pinned to the wall in a grid, pencil
 **Mimari:** x=0–3.4, y=0–3.6 (12 m²), **iç yükseklik yalnızca 1.0 m** (insan ancak emekleyerek ya da çömelerek hareket eder). Taban kontrplak, üstüne serilmiş eski halılar. Tavanı binanın betonu. Ahşap kirişler. Kapak koridora açılıyor (x=1.9–2.5). **Batı duvarında 70×70 cm sökülebilir kontrplak panel → çatı arası (L10).**
 **İçerik (sabit yerleşim):**
 - **Kuzey yarısı, "Nurten'in köşesi":** Katlanmış krem hırka, F-1, F-2 ve F-4 fotoğrafları çerçeveli, bir sıra halinde. Boş morfin kutuları düzenli bir piramit halinde. Yarım kalmış örgü sepeti. Küçük bir pilli lamba.
-- **Orta:** İnce bir sünger yatak, gri battaniye, termos, katlanmış bir hastane taburcu çantası, bir defter.
+- **Orta:** İnce bir sünger yatak, gri battaniye, termos, katlanmış bir hastane taburcu çantası, bir defter. Yatağın baş ucunda küçük, yıpranmış bir **deri alet çantası** (eğeler, birkaç anahtar taslağı, küçük bir mengene). *(B5-B'de eklendi.)*
 - **Güney yarısı:** Kombinin **baca borusu** (gri alüminyum, 10 cm çaplı) güneye doğru dış duvara uzanır. **Ortasındaki eklem gevşetilmiş, etrafı eski bir bezle ve gümüş bantla sarılı.** Etrafında hafif kurum lekesi.
 - **Batı duvarının dibi:** Kilitli, ezik, yeşil boyalı **metal kutu** (40×25×20 cm), üstünde "SARI ANAHTAR" çıkartması.
 - **B2-A dalında:** Kayıp Wi-Fi kamera yatağın üstünde.
@@ -245,7 +245,7 @@ scattered sketches of the apartment's rooms pinned to the wall in a grid, pencil
 LOCATION L09: a cramped hidden storage loft inside an apartment, only 1 meter high, 3.4 x 3.6 m, plywood floor covered with old worn kilim rugs,
 raw concrete ceiling with wooden joists, dust in the air, a 60x60 cm open hatch in the floor letting up a pale rectangle of light from the corridor below,
 on one side an arranged shrine-like corner: a folded cream cardigan, three framed faded photographs of a smiling woman in a neat row, a neat pyramid of empty medicine boxes, a basket of unfinished knitting, a small battery lamp,
-in the middle a thin foam mattress with a grey blanket, a steel thermos, a worn notebook,
+in the middle a thin foam mattress with a grey blanket, a steel thermos, a worn notebook, a small worn leather tool roll with metal files and blank keys,
 along the other side a grey 10 cm aluminum boiler flue pipe running to the outer wall with its middle joint loosened and wrapped in an old rag and silver duct tape, faint black soot stains around it,
 against the far wall a dented green metal box with a small faded "SARI ANAHTAR" sticker, and a removable 70x70 cm plywood panel leading into darkness
 ```
