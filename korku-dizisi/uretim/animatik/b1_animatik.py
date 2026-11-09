@@ -1291,7 +1291,7 @@ def main():
     wav_yaz(wav, ses_olustur(toplam))
     hedef = CIKTI / ("b1-animatik-onizleme.mp4" if ONIZLEME else "b1-animatik.mp4")
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
-           "-r", str(FPS), "-i", "-", "-i", str(wav), "-c:v", "libx264", "-preset", "medium", "-crf", "20",
+           "-r", str(FPS), "-i", "-", "-i", str(wav), "-c:v", "libx264", "-preset", "medium", "-crf", "26", "-maxrate", "4M", "-bufsize", "8M",
            "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-shortest", "-movflags", "+faststart", str(hedef)]
     ff = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     kare = 0
