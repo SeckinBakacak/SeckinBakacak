@@ -41,3 +41,13 @@
 | 3 | 1994 | Hakan'ın sırrı: o gece çağrıyı alan oydu ve "şaka" sanıp ekip göndermedi. |
 | 4 | Adınla Çağırır | Ses artık merkezdeki herkesin sesini taklit ediyor. Kim gerçekten konuşuyor? |
 | 5 | Son Çağrı | Selin kendi sesinin aradığını duyuyor: "112 Acil, dinliyorum." |
+
+## Üretim (`uretim/`)
+
+```
+cd 112/uretim && ./uret.sh bolum01
+```
+
+- `bolumXX.json`: sahneler. `lines` içinde `[konuşan, metin]` çiftleri; `*kelime*` kırmızı altyazı, `[whispers]` fısıltı. `sesler` bölümünde her karakterin ElevenLabs sesi ve efekti (`phone` telefon hattı, `radio` telsiz)
+- `ses.py`: çok sesli seslendirme, telefon/telsiz filtreleri, telsiz cızırtısı, zil, kapanma sesi, ortam sesleri (rüzgâr, ofis, motor), dalga formu verisi
+- `sahne.html`: tüm çizimler ve arayüzler; `render.mjs`: 1080x1920 MP4

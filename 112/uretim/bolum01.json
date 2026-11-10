@@ -1,0 +1,306 @@
+{
+ "baslik": "112 · BÖLÜM 1",
+ "model": {
+  "model_id": "eleven_v4",
+  "language_code": "tr"
+ },
+ "sesler": {
+  "anlatici": {
+   "voice_id": "nPczCjzI2devNBz1zQrb"
+  },
+  "nur": {
+   "voice_id": "cgSgspJ2msm6clMCkdW9",
+   "fx": "phone",
+   "label": "HAT 1 · NUR",
+   "color": "#7dd3fc"
+  },
+  "selin": {
+   "voice_id": "EXAVITQu4vr4xnSDxMaL",
+   "label": "SELİN",
+   "color": "#f0abfc"
+  },
+  "rizatel": {
+   "voice_id": "N2lVS1w4EtoT3dr4eOWO",
+   "fx": "radio",
+   "label": "TELSİZ · RIZA",
+   "color": "#fbbf24"
+  },
+  "hakan": {
+   "voice_id": "pqHfZKP75CvOlQylNhV4",
+   "label": "HAKAN",
+   "color": "#e5e7eb"
+  },
+  "rizaphone": {
+   "voice_id": "N2lVS1w4EtoT3dr4eOWO",
+   "fx": "phone",
+   "label": "HAT 1 · ???",
+   "color": "#ff4d4d"
+  }
+ },
+ "secim": {
+  "sol": [
+   "HATTI KAPAT,",
+   "HAKAN'A DİNLET"
+  ],
+  "sag": [
+   "DEVAM ET,",
+   "KAPIDAKİNİ SOR"
+  ]
+ },
+ "sahneler": [
+  {
+   "v": "wave",
+   "amb": "none",
+   "lead": 0.7,
+   "stamp": "ÇAĞRI KAYDI · 03:00:12",
+   "lines": [
+    [
+     "nur",
+     "[whispers] Abla... annem *uyanmıyor*."
+    ]
+   ]
+  },
+  {
+   "v": "ext",
+   "amb": "wind",
+   "stamp": "KARAAĞAÇ · 02:58",
+   "lines": [
+    [
+     "anlatici",
+     "Karaağaç, küçük bir ilçe. Burada geceleri, neredeyse hiç çağrı gelmez."
+    ]
+   ]
+  },
+  {
+   "v": "office",
+   "amb": "office",
+   "clock": "02:59",
+   "lines": [
+    [
+     "anlatici",
+     "Selin, üç aydır gece vardiyasında. Yanında sadece amiri Hakan var. Otuz yıldır, bu masada."
+    ]
+   ]
+  },
+  {
+   "v": "screen_ring",
+   "amb": "office",
+   "stamp": "03:00:00",
+   "lead": 0.9,
+   "sfx": [
+    [
+     "ring",
+     0.0
+    ],
+    [
+     "ring",
+     1.6
+    ]
+   ],
+   "lines": [
+    [
+     "anlatici",
+     "Saat tam üçte, hat *çalıyor*."
+    ]
+   ]
+  },
+  {
+   "v": "selin",
+   "amb": "office",
+   "lines": [
+    [
+     "selin",
+     "112 Acil, dinliyorum."
+    ],
+    [
+     "nur",
+     "Abla, annem uyanmıyor. Burası çok soğuk."
+    ]
+   ]
+  },
+  {
+   "v": "screen_form",
+   "amb": "office",
+   "lines": [
+    [
+     "anlatici",
+     "Adı Nur. Yedi yaşında. Adresi veriyor. Değirmen Yolu, son ev."
+    ]
+   ]
+  },
+  {
+   "v": "wave_cut",
+   "amb": "office",
+   "sfx": [
+    [
+     "radio",
+     0.0
+    ]
+   ],
+   "lines": [
+    [
+     "anlatici",
+     "Arkadan cızırtılı, eski bir radyo sesi geliyor. Sonra hat, *kesiliyor*."
+    ]
+   ],
+   "tail": 1.0
+  },
+  {
+   "v": "map",
+   "amb": "office",
+   "lines": [
+    [
+     "anlatici",
+     "Konum, köyün dışında, boş bir araziyi gösteriyor."
+    ]
+   ]
+  },
+  {
+   "v": "road",
+   "amb": "engine",
+   "lines": [
+    [
+     "anlatici",
+     "Selin, en yakın ambulansı gönderiyor. Şoför, Rıza."
+    ],
+    [
+     "rizatel",
+     "Anlaşıldı merkez, yoldayız."
+    ]
+   ]
+  },
+  {
+   "v": "ruin",
+   "amb": "wind",
+   "lead": 0.6,
+   "lines": [
+    [
+     "rizatel",
+     "Merkez... Burada ev yok. Sadece, yanmış duvarlar var."
+    ]
+   ],
+   "tail": 0.6
+  },
+  {
+   "v": "hakan",
+   "amb": "office",
+   "lines": [
+    [
+     "anlatici",
+     "Hakan, ekrandaki adrese bakıyor. Yüzü bembeyaz."
+    ],
+    [
+     "hakan",
+     "O ev, otuz yıl önce yandı. İçinde bir anne, bir de kız çocuğu vardı."
+    ]
+   ],
+   "tail": 0.6
+  },
+  {
+   "v": "office_riza",
+   "amb": "office",
+   "clock": "04:10",
+   "stamp": "04:10",
+   "lines": [
+    [
+     "anlatici",
+     "Bir saat sonra Rıza merkeze dönüyor. Selin'in yanına oturup, çayını içiyor."
+    ]
+   ]
+  },
+  {
+   "v": "screen_ring",
+   "amb": "office",
+   "stamp": "04:12:37",
+   "lead": 0.9,
+   "sfx": [
+    [
+     "ring",
+     0.0
+    ],
+    [
+     "ring",
+     1.6
+    ]
+   ],
+   "lines": [
+    [
+     "anlatici",
+     "Ve hat, yeniden *çalıyor*."
+    ]
+   ]
+  },
+  {
+   "v": "wave",
+   "amb": "none",
+   "lines": [
+    [
+     "nur",
+     "Abla, gönderdiğin amca geldi. Ama içeri girmiyor. Kapıda *duruyor*."
+    ]
+   ]
+  },
+  {
+   "v": "wave2",
+   "amb": "none",
+   "lines": [
+    [
+     "anlatici",
+     "Sonra arkadan, bir erkek sesi geliyor."
+    ],
+    [
+     "rizaphone",
+     "Selin... Bizi buraya neden *gönderdin*?"
+    ]
+   ],
+   "tail": 0.5
+  },
+  {
+   "v": "turn",
+   "amb": "office",
+   "sfx": [
+    [
+     "boom",
+     0.0
+    ]
+   ],
+   "lines": [
+    [
+     "anlatici",
+     "Bu, Rıza'nın sesi. Ama Rıza şu an, *yanında* oturuyor."
+    ]
+   ],
+   "tail": 0.6
+  },
+  {
+   "v": "black",
+   "amb": "none",
+   "head": "TELEFONDAKİ KİM?",
+   "sfx": [
+    [
+     "heart",
+     0.0
+    ]
+   ],
+   "lines": [
+    [
+     "anlatici",
+     "Peki, telefondaki *kim*?"
+    ]
+   ],
+   "tail": 0.8
+  },
+  {
+   "v": "choice",
+   "amb": "none",
+   "nocap": true,
+   "extra": 5.6,
+   "lines": [
+    [
+     "anlatici",
+     "Sen olsan ne yapardın? Yorumlara yaz."
+    ]
+   ]
+  }
+ ]
+}

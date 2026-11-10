@@ -1,0 +1,672 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;background:#000;width:720px;height:1280px;overflow:hidden;font-family:'Inter',sans-serif}
+  #stage{position:relative;width:720px;height:1280px;overflow:hidden}
+  #art{position:absolute;inset:0}
+  .ov{position:absolute;left:0;right:0;text-align:center}
+  #head{top:300px;font-weight:900;font-size:64px;color:#ff3030;letter-spacing:1px;padding:0 30px;
+        text-shadow:0 0 30px rgba(255,0,0,.45),0 4px 0 rgba(0,0,0,.7)}
+  #cap{top:968px;font-weight:900;font-size:58px;line-height:1.06;color:#fff;padding:0 30px;
+       -webkit-text-stroke:5px #000;paint-order:stroke fill;text-shadow:0 5px 0 rgba(0,0,0,.55)}
+  #cap .on{color:#ffd23f}
+  #cap .red{color:#ff3434}
+  #box{left:36px;right:36px;top:150px;text-align:left}
+  #box .who{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:17px;letter-spacing:1.5px;margin:0 0 8px 2px;display:flex;align-items:center;gap:8px}
+  #box .who i{display:inline-block;width:9px;height:9px;border-radius:50%}
+  #box .txt{display:inline-block;background:rgba(6,8,12,.86);border-left:6px solid;padding:15px 22px;
+            font-weight:800;font-size:27px;color:#fff;line-height:1.32;border-radius:4px;max-width:610px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+  #stamp{top:1226px;right:26px;left:auto;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:18px;color:rgba(235,235,235,.7)}
+  #grain{position:absolute;inset:-64px;opacity:.075;mix-blend-mode:overlay;pointer-events:none}
+  #fade{position:absolute;inset:0;background:#000;pointer-events:none}
+  #flash{position:absolute;inset:0;background:#fff;pointer-events:none;opacity:0}
+</style></head>
+<body><div id="stage">
+  <svg id="art" width="720" height="1280" viewBox="0 0 720 1280"></svg>
+  <div id="grain"></div>
+  <div id="head" class="ov"></div>
+  <div id="box" class="ov"></div>
+  <div id="cap" class="ov"></div>
+  <div id="stamp" class="ov"></div>
+  <div id="flash"></div>
+  <div id="fade"></div>
+</div>
+<script>
+const W = 720, H = 1280;
+const O = (w = 4, c = '#0b0e16') => `stroke="${c}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = x => x * x * (3 - 2 * x);
+const lerp = (a, b, k) => a + (b - a) * k;
+const rnd = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const up = s => s.toLocaleUpperCase('tr-TR');
+const f1 = v => v.toFixed(1);
+let TL = null;
+
+/* ---------- ortak tanımlar ---------- */
+const DEFS = `<defs>
+  <radialGradient id="vig" cx="50%" cy="46%" r="72%"><stop offset="52%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".82"/></radialGradient>
+  <radialGradient id="gCyan"><stop offset="0" stop-color="#7fe3ff" stop-opacity=".6"/><stop offset="1" stop-color="#7fe3ff" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gWarm"><stop offset="0" stop-color="#ffcf87" stop-opacity=".7"/><stop offset="1" stop-color="#ffcf87" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gOrange"><stop offset="0" stop-color="#ffb35c" stop-opacity=".75"/><stop offset="1" stop-color="#ffb35c" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gRed"><stop offset="0" stop-color="#ff2b2b" stop-opacity=".85"/><stop offset="1" stop-color="#ff2b2b" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gBlue"><stop offset="0" stop-color="#2b6bff" stop-opacity=".85"/><stop offset="1" stop-color="#2b6bff" stop-opacity="0"/></radialGradient>
+  <radialGradient id="gWhite"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+  <linearGradient id="skyN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#04070f"/><stop offset=".7" stop-color="#16213a"/><stop offset="1" stop-color="#2a3550"/></linearGradient>
+  <linearGradient id="snowG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#aab6cb"/><stop offset="1" stop-color="#6d7a93"/></linearGradient>
+  <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff6d8" stop-opacity=".55"/><stop offset="1" stop-color="#fff6d8" stop-opacity="0"/></linearGradient>
+  <linearGradient id="lampCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffbe6b" stop-opacity=".45"/><stop offset="1" stop-color="#ffbe6b" stop-opacity="0"/></linearGradient>
+  <linearGradient id="flash" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff9e0" stop-opacity=".6"/><stop offset="1" stop-color="#fff9e0" stop-opacity="0"/></linearGradient>
+  <linearGradient id="tea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c2410c"/><stop offset="1" stop-color="#7c1d06"/></linearGradient>
+  <linearGradient id="scrG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1626"/><stop offset="1" stop-color="#07101c"/></linearGradient>
+  <linearGradient id="wallC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2434"/><stop offset="1" stop-color="#2a3448"/></linearGradient>
+  <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="1.6" fill="#000" opacity=".22"/></pattern>
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0 L0 0 0 40" fill="none" stroke="#1d3b4f" stroke-width="1"/></pattern>
+  <filter id="b3"><feGaussianBlur stdDeviation="3"/></filter>
+  <filter id="b8"><feGaussianBlur stdDeviation="8"/></filter>
+  <filter id="b16"><feGaussianBlur stdDeviation="16"/></filter>
+  <filter id="b30"><feGaussianBlur stdDeviation="30"/></filter>
+</defs>`;
+
+/* ---------- yardımcılar ---------- */
+function snow(t, n, vx = -20, seed = 0, ymax = H) {
+  let s = '';
+  for (let i = 0; i < n; i++) {
+    const k = i + seed, d = .35 + rnd(k * 3.1) * .9;
+    const x = (((rnd(k) * (W + 80) + (vx * d + Math.sin(t * .8 + k) * 10) * t) % (W + 80)) + W + 80) % (W + 80) - 40;
+    const y = (rnd(k + 77) * ymax + (45 + 85 * d) * t) % ymax;
+    s += `<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(.9 + d * 2.4)}" fill="#fff" opacity="${(.3 + d * .55).toFixed(2)}"/>`;
+  }
+  return s;
+}
+const treeCache = {};
+function tree(seed, x, y, h, col, op = 1) {
+  const k = seed + ':' + h;
+  if (!treeCache[k]) {
+    const paths = [[], [], [], []];
+    const br = (x0, y0, a, len, d, s) => {
+      const x1 = x0 + Math.sin(a) * len, y1 = y0 - Math.cos(a) * len;
+      paths[Math.min(d, 3)].push(`M${f1(x0)} ${f1(y0)} L${f1(x1)} ${f1(y1)}`);
+      if (d >= 5 || len < 6) return;
+      const n = 2 + (rnd(s) > .6 ? 1 : 0);
+      for (let j = 0; j < n; j++) br(x1, y1, a + (rnd(s + j * 7) - .5) * 1.5, len * (.62 + rnd(s + j) * .18), d + 1, s * 1.7 + j * 13.1);
+    };
+    br(0, 0, (rnd(seed) - .5) * .15, h * .38, 0, seed + 1);
+    treeCache[k] = paths;
+  }
+  const ws = [h * .06, h * .035, h * .018, h * .009];
+  return `<g transform="translate(${x} ${y})" stroke="${col}" fill="none" stroke-linecap="round" opacity="${op}">` +
+    treeCache[k].map((p, i) => `<path d="${p.join(' ')}" stroke-width="${f1(Math.max(1, ws[i]))}"/>`).join('') + '</g>';
+}
+function teaGlass(x, y, s, steamT) {
+  let st = '';
+  if (steamT !== undefined) for (let i = 0; i < 3; i++) {
+    const ph = (steamT * .35 + i / 3) % 1;
+    st += `<path d="M${x - 10 + i * 10} ${y - 70 * s - ph * 80} q12 -18 0 -36 q-12 -18 0 -36" fill="none" stroke="#fff" stroke-width="${3 * s}" opacity="${(.28 * Math.sin(ph * Math.PI)).toFixed(2)}" stroke-linecap="round"/>`;
+  }
+  return `<g transform="translate(${x} ${y}) scale(${s})">
+    <ellipse cx="0" cy="8" rx="46" ry="11" fill="#d9dde3" ${O(3)}/>
+    <path d="M-22 4 Q-30 -20 -16 -38 Q-26 -56 -24 -74 L24 -74 Q26 -56 16 -38 Q30 -20 22 4 Z" fill="url(#tea)" ${O(3)}/>
+    <path d="M-23 -74 L23 -74 L22 -64 L-22 -64 Z" fill="#fde7c8" opacity=".55"/>
+    <path d="M-14 -66 Q-18 -50 -10 -38" fill="none" stroke="#fff" stroke-width="3" opacity=".45" stroke-linecap="round"/>
+  </g>${st}`;
+}
+function ambulance(x, y, s, t, lights = true, moving = false, snowRoof = false) {
+  const lb = lights ? (Math.floor(t * 6) % 2) : -1;
+  const spin = moving ? (t * 520) % 360 : 0;
+  const wheel = cx => `<g transform="translate(${cx} -34)"><circle r="36" fill="#15171c" ${O(4)}/><circle r="18" fill="#9aa1ac" ${O(3)}/>
+      <g transform="rotate(${spin})"><line x1="-16" y1="0" x2="16" y2="0" stroke="#5c636e" stroke-width="4"/><line x1="0" y1="-16" x2="0" y2="16" stroke="#5c636e" stroke-width="4"/></g><circle r="5" fill="#2a2e35"/></g>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})">
+    <ellipse cx="215" cy="2" rx="240" ry="14" fill="#000" opacity=".35"/>
+    <path d="M0 -40 L0 -208 Q0 -216 9 -216 L292 -216 L330 -210 L382 -132 L424 -114 Q432 -110 432 -96 L432 -40 Z" fill="#f2f4f7" ${O(5)}/>
+    <path d="M300 -200 L328 -200 L370 -134 L300 -134 Z" fill="#203048" ${O(3)}/>
+    <path d="M306 -194 L326 -194 L344 -166 L306 -166 Z" fill="#3c5574" opacity=".7"/>
+    <rect x="232" y="-196" width="56" height="58" rx="5" fill="#203048" ${O(3)}/>
+    <rect x="2" y="-112" width="428" height="24" fill="#d62828"/><rect x="2" y="-84" width="428" height="7" fill="#1d4ed8"/>
+    <text x="72" y="-138" font-weight="900" font-size="38" fill="#d62828">112</text>
+    <text x="146" y="-138" font-weight="900" font-size="28" fill="#1f2937">ACİL</text>
+    <g transform="translate(40 -152) scale(.75)" fill="#1d4ed8"><rect x="-5" y="-22" width="10" height="44" rx="2"/><rect x="-5" y="-22" width="10" height="44" rx="2" transform="rotate(60)"/><rect x="-5" y="-22" width="10" height="44" rx="2" transform="rotate(-60)"/></g>
+    <line x1="226" y1="-208" x2="226" y2="-44" stroke="#0b0e16" stroke-width="3"/><line x1="10" y1="-208" x2="10" y2="-44" stroke="#0b0e16" stroke-width="2"/>
+    <path d="M40 -40 A44 44 0 0 1 128 -40 Z M296 -40 A44 44 0 0 1 384 -40 Z" fill="#2b2f37"/>
+    ${wheel(84)}${wheel(340)}
+    <rect x="420" y="-104" width="12" height="16" rx="3" fill="#fff3b0" ${O(2)}/><rect x="0" y="-170" width="8" height="24" fill="#e11d48"/>
+    <rect x="246" y="-230" width="40" height="14" rx="4" fill="${lb === 0 ? '#5aa2ff' : '#1e3a8a'}" ${O(3)}/>
+    <rect x="286" y="-230" width="40" height="14" rx="4" fill="${lb === 1 ? '#ff6b6b' : '#7f1d1d'}" ${O(3)}/>
+    ${lb === 0 ? `<circle cx="266" cy="-223" r="70" fill="url(#gBlue)" opacity=".8"/>` : ''}${lb === 1 ? `<circle cx="306" cy="-223" r="70" fill="url(#gRed)" opacity=".8"/>` : ''}
+    ${snowRoof ? `<path d="M2 -216 Q60 -232 150 -226 Q240 -234 290 -218 L292 -214 L2 -214 Z" fill="#eef3fa" ${O(3)}/>` : ''}
+  </g>`;
+}
+function lampPost(x, y, h, t) {
+  const fl = .9 + .1 * Math.sin(t * 37) * (rnd(Math.floor(t * 4)) > .85);
+  return `<polygon points="${x - 40},${y - h + 14} ${x - 240},${y + 10} ${x + 160},${y + 10} ${x - 10},${y - h + 14}" fill="url(#lampCone)" opacity="${.9 * fl}"/>
+    <ellipse cx="${x - 40}" cy="${y + 8}" rx="190" ry="34" fill="url(#gOrange)" opacity="${.6 * fl}"/>
+    <rect x="${x - 5}" y="${y - h}" width="10" height="${h}" fill="#1a1f2b" ${O(3)}/>
+    <path d="M${x} ${y - h + 6} Q${x - 10} ${y - h - 24} ${x - 40} ${y - h - 10}" fill="none" stroke="#1a1f2b" stroke-width="8" stroke-linecap="round"/>
+    <path d="M${x - 62} ${y - h - 6} L${x - 18} ${y - h - 6} L${x - 26} ${y - h + 10} L${x - 54} ${y - h + 10} Z" fill="#2a3040" ${O(3)}/>
+    <ellipse cx="${x - 40}" cy="${y - h + 10}" rx="16" ry="5" fill="#ffe2a8"/>
+    <circle cx="${x - 40}" cy="${y - h + 10}" r="60" fill="url(#gOrange)" opacity="${fl}"/>`;
+}
+
+/* ---------- karakter parçaları ---------- */
+function selinBack(cx, cy, s, t) {   // arkadan görünüş, kulaklıklı
+  return `<g transform="translate(${cx} ${cy}) scale(${s})">
+    <path d="M-150 260 Q-150 120 -60 100 L60 100 Q150 120 150 260 Z" fill="#1e2a45" ${O(4)}/>
+    <path d="M-22 96 L22 96 L26 120 L-26 120 Z" fill="#c99a78"/>
+    <path d="M-78 30 Q-92 -60 -40 -88 Q0 -104 40 -88 Q92 -60 78 30 Q84 90 60 128 L-60 128 Q-84 90 -78 30 Z" fill="#4a2f22" ${O(4)}/>
+    <path d="M-40 -70 Q-10 -20 -24 80 M10 -86 Q20 -10 12 100 M48 -60 Q50 20 40 96" fill="none" stroke="#3a2419" stroke-width="3"/>
+    <path d="M-84 -10 Q-80 -110 0 -114 Q80 -110 84 -10" fill="none" stroke="#22252c" stroke-width="12" stroke-linecap="round"/>
+    <ellipse cx="-84" cy="0" rx="16" ry="26" fill="#1b1d23" ${O(3)}/><ellipse cx="84" cy="0" rx="16" ry="26" fill="#1b1d23" ${O(3)}/>
+    <path d="M-84 20 Q-110 60 -70 90" fill="none" stroke="#22252c" stroke-width="5" stroke-linecap="round"/>
+    <path d="M78 -40 Q88 0 74 50" fill="none" stroke="#7fe3ff" stroke-width="5" opacity=".45" stroke-linecap="round"/>
+  </g>`;
+}
+function hakanSmall(cx, cy, s, t) {   // arka masada, yandan
+  const sip = (t % 7) < 1.4 ? 1 : 0;
+  return `<g transform="translate(${cx} ${cy}) scale(${s})">
+    <rect x="-46" y="10" width="20" height="120" rx="6" fill="#111318" ${O(3)}/>
+    <path d="M-40 130 Q-60 40 -20 10 L30 10 Q56 40 50 130 Z" fill="#6b6f78" ${O(4)}/>
+    <circle cx="0" cy="-26" r="34" fill="#d8a886" ${O(4)}/>
+    <path d="M-30 -40 Q-26 -66 6 -62 Q30 -58 32 -36 Q20 -48 4 -50 Q-14 -50 -30 -40 Z" fill="#c9ccd1" ${O(3)}/>
+    <path d="M-34 -30 Q-38 -10 -26 -4" fill="#c9ccd1" ${O(2)}/>
+    <rect x="-34" y="-34" width="18" height="12" rx="3" fill="#bfe8ff" fill-opacity=".35" ${O(2.5, '#2a2a2a')}/>
+    <path d="M-36 -10 Q-24 -2 -12 -10" fill="#c9ccd1" ${O(2)}/>
+    <g transform="translate(${sip ? -30 : -48} ${sip ? -14 : 40})">${teaGlass(0, 0, .45)}</g>
+    <path d="M-20 40 Q-44 ${sip ? 0 : 40} ${sip ? -36 : -52} ${sip ? -10 : 40}" fill="none" stroke="#0b0e16" stroke-width="20" stroke-linecap="round"/>
+    <path d="M-20 40 Q-44 ${sip ? 0 : 40} ${sip ? -36 : -52} ${sip ? -10 : 40}" fill="none" stroke="#6b6f78" stroke-width="13" stroke-linecap="round"/>
+  </g>`;
+}
+function rizaSide(cx, cy, s, t) {   // Selin'in yanında oturuyor, 3/4 arkadan
+  return `<g transform="translate(${cx} ${cy}) scale(${s})">
+    <path d="M-120 280 Q-130 120 -60 96 L70 96 Q140 120 130 280 Z" fill="#1b2540" ${O(4)}/>
+    <path d="M-120 200 Q-125 120 -60 96 L70 96 Q138 120 132 200 Z" fill="#b3202a"/>
+    <rect x="-124" y="190" width="258" height="18" fill="#cfd8e3" opacity=".9"/>
+    <path d="M-120 280 Q-130 120 -60 96 L70 96 Q140 120 130 280 Z" fill="none" ${O(4)}/>
+    ${[...Array(9)].map((_, i) => `<circle cx="${-90 + i * 22}" cy="${104 + (i % 3) * 6}" r="${2 + (i % 2)}" fill="#fff" opacity=".9"/>`).join('')}
+    <circle cx="0" cy="20" r="72" fill="#c99a78" ${O(4)}/>
+    <path d="M-72 14 Q-74 -54 0 -56 Q74 -54 72 14 Q60 -18 30 -24 Q-30 -26 -72 14 Z" fill="#17171c" ${O(3)}/>
+    <path d="M44 30 Q70 40 66 70 Q54 92 24 90" fill="#2a2522" opacity=".95"/>
+    <ellipse cx="70" cy="22" rx="10" ry="16" fill="#c99a78" ${O(3)}/>
+  </g>`;
+}
+
+/* ---------- ekran arayüzü ---------- */
+function uiFrame(inner, t, title = 'KARAAĞAÇ 112 · ÇAĞRI YÖNETİM SİSTEMİ', clock = '03:00:00') {
+  return `<rect width="720" height="1280" fill="#0b0d12"/>
+    <rect x="18" y="60" width="684" height="1150" rx="22" fill="#14161c" ${O(5)}/>
+    <rect x="40" y="82" width="640" height="1080" rx="8" fill="url(#scrG)"/>
+    <rect x="40" y="82" width="640" height="56" fill="#0f2238"/>
+    <circle cx="66" cy="110" r="9" fill="#ef4444"/><text x="86" y="117" font-family="JetBrains Mono" font-weight="800" font-size="17" fill="#cfe8ff">${title}</text>
+    <text x="664" y="117" text-anchor="end" font-family="JetBrains Mono" font-weight="700" font-size="17" fill="#7fb4dd">${clock}</text>
+    ${inner}
+    <rect x="40" y="82" width="640" height="1080" fill="url(#scan)"/>
+    <polygon points="40,82 330,82 40,560" fill="#fff" opacity=".035"/>
+    <text x="360" y="1192" text-anchor="middle" font-weight="900" font-size="15" fill="#3b4250" letter-spacing="3">112</text>`;
+}
+function lineList(active, t) {
+  const rows = [['HAT 1', active ? 'GELEN' : 'BOŞ'], ['HAT 2', 'BOŞ'], ['HAT 3', 'BOŞ'], ['HAT 4', 'KAPALI']];
+  return rows.map((r, i) => {
+    const on = i === 0 && active, bl = on && Math.floor(t * 3) % 2;
+    return `<rect x="60" y="${168 + i * 70}" width="190" height="56" rx="8" fill="${on ? (bl ? '#7f1d1d' : '#3b0d0d') : '#0f1a2a'}" stroke="${on ? '#ef4444' : '#1f2f45'}" stroke-width="2"/>
+      <text x="78" y="${202 + i * 70}" font-family="JetBrains Mono" font-weight="800" font-size="18" fill="#e5f0ff">${r[0]}</text>
+      <text x="236" y="${202 + i * 70}" text-anchor="end" font-family="JetBrains Mono" font-weight="700" font-size="14" fill="${on ? '#fca5a5' : '#58708f'}">${r[1]}</text>`;
+  }).join('');
+}
+function phoneIcon(x, y, s, col) {
+  return `<path transform="translate(${x} ${y}) scale(${s})" d="M-28 -18 Q-30 -32 -18 -34 L-8 -34 Q-2 -34 0 -26 L4 -12 Q5 -6 0 -2 L-6 2 Q2 18 18 26 L22 20 Q26 15 32 16 L46 20 Q54 22 54 28 L54 38 Q52 50 38 48 Q-24 40 -28 -18 Z" fill="${col}"/>`;
+}
+
+/* ---------- sahneler ---------- */
+const S = {
+  wave(p, t, sc) { return waveScene(t, sc, false); },
+  wave2(p, t, sc) { return waveScene(t, sc, true); },
+  wave_cut(p, t, sc) { return waveScene(t, sc, false, true); },
+
+  ext(p, t) {
+    let win = '';
+    [[130, 0], [235, 1], [340, 0], [445, 2]].forEach(([x, k], i) => {
+      win += `<rect x="${x}" y="700" width="80" height="96" fill="${k === 1 ? '#bfe9ff' : '#f6d9a0'}" ${O(4)}/>`;
+      for (let j = 0; j < 5; j++) win += `<line x1="${x}" y1="${708 + j * 9}" x2="${x + 80}" y2="${708 + j * 9}" stroke="#8a7350" stroke-width="2" opacity=".6"/>`;
+      if (k === 1) win += `<rect x="${x + 22}" y="756" width="36" height="22" fill="#0d1b2a"/><circle cx="${x + 40}" cy="748" r="9" fill="#1b2738"/><path d="M${x + 26} 796 Q${x + 40} 760 ${x + 54} 796 Z" fill="#1b2738"/>`;
+      win += `<line x1="${x + 40}" y1="700" x2="${x + 40}" y2="796" stroke="#0b0e16" stroke-width="3"/>`;
+    });
+    let prints = ''; for (let i = 0; i < 9; i++) prints += `<ellipse cx="${500 - i * 34}" cy="${1060 + (i % 2) * 14 + i * 6}" rx="8" ry="4" fill="#5b6780" opacity=".6"/>`;
+    return `<rect width="720" height="1280" fill="url(#skyN)"/>
+      <ellipse cx="360" cy="640" rx="520" ry="160" fill="#c46a2a" opacity=".1" filter="url(#b30)"/>
+      <path d="M0 640 Q120 560 240 610 Q360 540 470 600 Q600 550 720 610 L720 700 L0 700 Z" fill="#101827"/>
+      ${tree(3, 40, 690, 150, '#0d1422')}${tree(9, 680, 680, 170, '#0d1422')}
+      <rect x="0" y="880" width="720" height="400" fill="url(#snowG)"/>
+      <path d="M0 880 Q180 862 360 878 Q540 892 720 872 L720 900 L0 900 Z" fill="#c4cfdf"/>
+      <rect x="80" y="660" width="500" height="250" fill="#7d838e" ${O(5)}/>
+      <rect x="80" y="660" width="500" height="250" fill="#000" opacity=".18"/>
+      <rect x="66" y="640" width="528" height="24" fill="#5c626d" ${O(4)}/>
+      <path d="M62 642 Q140 618 250 628 Q380 612 470 626 Q560 616 598 640 Z" fill="#eef3fa" ${O(3)}/>
+      <rect x="150" y="548" width="360" height="78" rx="6" fill="#f4f6f8" ${O(4)}/>
+      <rect x="160" y="558" width="92" height="58" rx="4" fill="#dc2626"/>
+      <text x="206" y="603" text-anchor="middle" font-weight="900" font-size="40" fill="#fff">112</text>
+      <text x="264" y="586" font-weight="900" font-size="20" fill="#b91c1c">ACİL ÇAĞRI MERKEZİ</text>
+      <text x="264" y="609" font-weight="800" font-size="16" fill="#334155" letter-spacing="3">KARAAĞAÇ</text>
+      <ellipse cx="330" cy="590" rx="230" ry="70" fill="#fff" opacity=".12" filter="url(#b16)"/>
+      ${win}
+      <rect x="460" y="826" width="20" height="60" fill="#e8b04a"/>
+      <rect x="540" y="740" width="30" height="20" fill="#3c4350" ${O(3)}/>
+      <path d="M440 700 L600 700 L590 690 L450 690 Z" fill="#4a505b"/>
+      <rect x="448" y="700" width="140" height="10" fill="#4a505b" ${O(3)}/>
+      <path d="M446 700 Q520 684 592 700" fill="#eef3fa" ${O(2)}/>
+      <rect x="462" y="712" width="112" height="196" fill="#ffe7b3" ${O(4)}/>
+      <line x1="518" y1="712" x2="518" y2="908" stroke="#0b0e16" stroke-width="4"/>
+      <ellipse cx="518" cy="930" rx="120" ry="26" fill="url(#gWarm)"/>
+      ${prints}
+      ${ambulance(96, 918, .5, t, false, false, true)}
+      ${lampPost(660, 1000, 360, t)}
+      ${snow(t, 140, -45, 5)}`;
+  },
+
+  office(p, t, sc) { return officeScene(p, t, sc, false); },
+  office_riza(p, t, sc) { return officeScene(p, t, sc, true); },
+
+  screen_ring(p, t, sc) {
+    const lt = t - sc.start, pulse = (lt * 1.2) % 1;
+    const inner = `${lineList(true, t)}
+      <rect x="270" y="168" width="390" height="460" rx="14" fill="#0e1b2d" stroke="#ef4444" stroke-width="3"/>
+      <circle cx="465" cy="320" r="${60 + pulse * 70}" fill="none" stroke="#ef4444" stroke-width="4" opacity="${1 - pulse}"/>
+      <circle cx="465" cy="320" r="${60 + ((pulse + .5) % 1) * 70}" fill="none" stroke="#ef4444" stroke-width="3" opacity="${1 - (pulse + .5) % 1}"/>
+      <circle cx="465" cy="320" r="62" fill="#ef4444"/>${phoneIcon(452, 314, 1.1, '#fff')}
+      <text x="465" y="460" text-anchor="middle" font-weight="900" font-size="38" fill="#fff">GELEN ÇAĞRI</text>
+      <text x="465" y="500" text-anchor="middle" font-family="JetBrains Mono" font-weight="700" font-size="20" fill="#fca5a5">HAT 1 · NUMARA GİZLİ</text>
+      <rect x="330" y="540" width="270" height="62" rx="31" fill="${Math.floor(t * 3) % 2 ? '#16a34a' : '#15803d'}"/>
+      <text x="465" y="581" text-anchor="middle" font-weight="900" font-size="24" fill="#fff">CEVAPLA</text>
+      <rect x="60" y="660" width="600" height="270" rx="12" fill="#0d1726" stroke="#1f2f45" stroke-width="2"/>
+      <text x="82" y="700" font-family="JetBrains Mono" font-weight="800" font-size="16" fill="#58708f">ARAYAN BİLGİSİ</text>
+      ${[['NUMARA', 'GİZLİ'], ['KONUM', 'TESPİT EDİLİYOR' + '.'.repeat(1 + Math.floor(t * 3) % 3)], ['SİSTEM', 'KAYIT BAŞLADI ●']].map((r, i) =>
+        `<text x="82" y="${752 + i * 56}" font-family="JetBrains Mono" font-weight="700" font-size="19" fill="#7fa0c4">${r[0]}</text><text x="250" y="${752 + i * 56}" font-family="JetBrains Mono" font-weight="800" font-size="19" fill="${i === 2 ? '#f87171' : '#e5f0ff'}">${r[1]}</text>`).join('')}`;
+    return uiFrame(inner, t, undefined, sc.stamp || '03:00:00');
+  },
+
+  screen_form(p, t, sc) {
+    const find = pre => { const w = sc.words.find(w => up(w.w).startsWith(up(pre))); return w ? w.s : 1e9; };
+    const typed = (txt, t0, cps = 16) => { const n = Math.floor(clamp((t - t0) * cps, 0, txt.length)); return txt.slice(0, n); };
+    const caret = Math.floor(t * 2.5) % 2 ? '▍' : '';
+    const fields = [['ARAYAN ADI', 'Nur', find('Nur')], ['YAŞ', '7', find('Yedi')], ['ADRES', 'Değirmen Yolu, son ev', find('Değirmen')], ['DURUM', 'Anne bilinçsiz. Çocuk yalnız.', find('Değirmen') + 2.2]];
+    let active = fields.findIndex(f => t < f[2] + f[1].length / 16);
+    const dur = Math.floor(t - sc.start + 18);
+    const inner = `${lineList(false, t).replace('BOŞ', 'GÖRÜŞME')}
+      <rect x="270" y="168" width="390" height="56" rx="10" fill="#0f2a1d" stroke="#22c55e" stroke-width="2"/>
+      <circle cx="296" cy="196" r="8" fill="#22c55e"/><text x="316" y="203" font-family="JetBrains Mono" font-weight="800" font-size="18" fill="#bbf7d0">HAT 1 · GÖRÜŞMEDE</text>
+      <text x="640" y="203" text-anchor="end" font-family="JetBrains Mono" font-weight="800" font-size="18" fill="#bbf7d0">00:${String(dur).padStart(2, '0')}</text>
+      <rect x="60" y="460" width="600" height="560" rx="12" fill="#0d1726" stroke="#1f2f45" stroke-width="2"/>
+      <text x="82" y="502" font-family="JetBrains Mono" font-weight="800" font-size="17" fill="#58708f">ÇAĞRI FORMU · #0317</text>
+      ${fields.map((f, i) => {
+        const v = typed(f[1], f[2]);
+        return `<text x="82" y="${566 + i * 110}" font-family="JetBrains Mono" font-weight="700" font-size="16" fill="#7fa0c4">${f[0]}</text>
+          <rect x="82" y="${578 + i * 110}" width="556" height="54" rx="6" fill="#0a1220" stroke="${i === active ? '#38bdf8' : '#22324a'}" stroke-width="2"/>
+          <text x="98" y="${614 + i * 110}" font-weight="800" font-size="25" fill="${i === 3 ? '#fca5a5' : '#f1f5f9'}">${v}${i === active ? caret : ''}</text>`;
+      }).join('')}`;
+    return uiFrame(inner, t, undefined, '03:00:' + String(18 + Math.floor(t - sc.start)).padStart(2, '0'));
+  },
+
+  map(p, t, sc) {
+    const z = 1 + .9 * ease(clamp(p * 1.3));
+    const px = 520, py = 420, pul = (t * 1.1) % 1;
+    let houses = '';
+    for (let i = 0; i < 26; i++) { const x = 120 + rnd(i) * 220, y = 520 + rnd(i + 40) * 230; houses += `<rect x="${f1(x)}" y="${f1(y)}" width="${f1(14 + rnd(i + 3) * 14)}" height="${f1(12 + rnd(i + 5) * 12)}" fill="#2b3f52" stroke="#3d5a73" stroke-width="1.5"/>`; }
+    let cont = ''; for (let i = 0; i < 9; i++) cont += `<path d="M${-40 + i * 10} ${200 + i * 120} Q300 ${120 + i * 130} 760 ${230 + i * 110}" fill="none" stroke="#16303a" stroke-width="2"/>`;
+    const inner = `<g clip-path="url(#mapclip)"><g transform="translate(${px} ${py}) scale(${z}) translate(${-px} ${-py})">
+        <rect x="-200" y="0" width="1100" height="1300" fill="#0c171d"/>${cont}
+        <path d="M-50 300 Q200 420 260 620 Q300 820 560 980 Q700 1060 800 1200" fill="none" stroke="#1e4f73" stroke-width="22" stroke-linecap="round"/>
+        <path d="M-50 300 Q200 420 260 620 Q300 820 560 980 Q700 1060 800 1200" fill="none" stroke="#2b6a96" stroke-width="10" stroke-linecap="round"/>
+        <path d="M0 760 L700 600" stroke="#4b5b6b" stroke-width="12"/><path d="M220 1200 L250 200" stroke="#4b5b6b" stroke-width="10"/>
+        <path d="M300 640 Q420 560 520 420" fill="none" stroke="#7c8a99" stroke-width="7" stroke-dasharray="14 10"/>
+        ${houses}
+        <text x="140" y="500" font-weight="900" font-size="26" fill="#9fb3c8" letter-spacing="2">KARAAĞAÇ</text>
+        <text x="370" y="540" font-weight="800" font-size="16" fill="#9fb3c8" transform="rotate(-48 370 540)">DEĞİRMEN YOLU</text>
+        <text x="120" y="880" font-weight="700" font-size="16" fill="#3f7aa3" font-style="italic">Değirmen Deresi</text>
+        <circle cx="${px}" cy="${py}" r="${50 + pul * 70}" fill="#ef4444" opacity="${.25 * (1 - pul)}"/>
+        <circle cx="${px}" cy="${py}" r="46" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="6 6"/>
+        <path d="M${px} ${py} q-22 -30 -22 -48 a22 22 0 1 1 44 0 q0 18 -22 48 Z" fill="#ef4444" ${O(3)}/><circle cx="${px}" cy="${py - 48}" r="8" fill="#fff"/>
+      </g></g>
+      <rect x="60" y="930" width="600" height="200" rx="12" fill="#0d1726" stroke="#1f2f45" stroke-width="2" opacity=".95"/>
+      <text x="82" y="972" font-family="JetBrains Mono" font-weight="800" font-size="16" fill="#58708f">KONUM TESPİTİ · HAT 1</text>
+      <text x="82" y="1016" font-family="JetBrains Mono" font-weight="800" font-size="21" fill="#e5f0ff">39.4127° K  34.0581° D</text>
+      <text x="82" y="1056" font-family="JetBrains Mono" font-weight="700" font-size="18" fill="#7fa0c4">EN YAKIN YAPI:</text>
+      <text x="300" y="1056" font-family="JetBrains Mono" font-weight="800" font-size="18" fill="#fca5a5">KAYIT YOK</text>
+      <text x="82" y="1094" font-family="JetBrains Mono" font-weight="700" font-size="18" fill="#7fa0c4">DOĞRULUK: ±12 m</text>`;
+    return uiFrame(`<defs><clipPath id="mapclip"><rect x="40" y="138" width="640" height="1024"/></clipPath></defs>` + inner, t, 'HARİTA · KONUM', '03:01:' + String(9 + Math.floor(t - sc.start)).padStart(2, '0'));
+  },
+
+  road(p, t, sc) {
+    const sp = 260;
+    let far = '', mid = '', near = '';
+    for (let i = 0; i < 6; i++) { const x = ((i * 190 - t * 18) % 1140 + 1140) % 1140 - 200; far += tree(i + 20, x, 760, 130, '#1a2438', .9); }
+    for (let i = 0; i < 6; i++) { const x = ((i * 230 - t * 90) % 1380 + 1380) % 1380 - 260; mid += tree(i + 50, x, 820, 300, '#0c111c'); }
+    for (let i = 0; i < 8; i++) { const x = ((i * 140 - t * sp) % 1120 + 1120) % 1120 - 200; near += `<rect x="${f1(x)}" y="1010" width="12" height="90" fill="#0a0d14"/><rect x="${f1(x - 2)}" y="1004" width="16" height="8" fill="#dfe6f0"/>`; }
+    const lb = Math.floor(t * 6) % 2, bob = Math.sin(t * 11) * 1.5;
+    return `<rect width="720" height="1280" fill="url(#skyN)"/>
+      <path d="M0 700 Q140 620 300 660 Q460 600 600 650 Q680 630 720 650 L720 780 L0 780 Z" fill="#141d2e"/>
+      <g transform="translate(0 -140)">${far}
+      <rect x="0" y="780" width="720" height="640" fill="url(#snowG)"/>
+      ${mid}
+      <rect x="0" y="905" width="720" height="110" fill="#3a4357"/>
+      <path d="M0 905 L720 905" stroke="#dfe6f0" stroke-width="6"/>
+      ${[...Array(8)].map((_, i) => { const x = ((i * 120 - t * sp) % 960 + 960) % 960 - 120; return `<rect x="${f1(x)}" y="958" width="60" height="6" fill="#c7cdd6" opacity=".7"/>`; }).join('')}
+      <polygon points="569,899 760,800 760,1010" fill="url(#beam)"/>
+      <ellipse cx="${lb ? 300 : 420}" cy="800" rx="340" ry="260" fill="url(#${lb ? 'gBlue' : 'gRed'})" opacity=".28"/>
+      <g transform="translate(0 ${f1(bob)})">${ambulance(170, 990, .95, t, true, true)}</g>
+      ${near}</g>
+      ${snow(t, 160, -260, 9)}`;
+  },
+
+  ruin(p, t, sc) {
+    const lb = Math.floor(t * 5) % 2;
+    let stones = '';
+    for (let r = 0; r < 12; r++) for (let c = 0; c < 8; c++) { const x = 110 + c * 64 + (r % 2) * 32, y = 520 + r * 40; if (x < 600) stones += `<rect x="${x}" y="${y}" width="60" height="36" rx="5" fill="${rnd(r * 9 + c) > .5 ? '#2a2624' : '#1f1c1b'}"/>`; }
+    const beamOn = .8 + .2 * Math.sin(t * 23) * (rnd(Math.floor(t * 5)) > .7);
+    return `<rect width="720" height="1280" fill="url(#skyN)"/>
+      <g transform="translate(0 -110)">
+      ${tree(77, 640, 900, 380, '#0b0f18')}
+      <rect x="0" y="880" width="720" height="520" fill="url(#snowG)"/>
+      <defs><clipPath id="wall"><path d="M100 1000 L100 560 L150 540 L190 590 L240 500 L300 530 L360 470 L400 520 L450 490 L520 560 L560 530 L610 580 L610 1000 Z"/></clipPath></defs>
+      <g clip-path="url(#wall)"><rect x="100" y="460" width="510" height="540" fill="#191716"/>${stones}
+        <ellipse cx="360" cy="560" rx="260" ry="120" fill="#000" opacity=".5"/></g>
+      <path d="M100 1000 L100 560 L150 540 L190 590 L240 500 L300 530 L360 470 L400 520 L450 490 L520 560 L560 530 L610 580 L610 1000" fill="none" ${O(5)}/>
+      <path d="M98 562 L150 538 L190 586 L240 498 L300 528 L360 468 L400 518 L450 488 L520 558 L560 528 L612 578" fill="none" stroke="#e8eef7" stroke-width="9" stroke-linecap="round"/>
+      <rect x="400" y="380" width="60" height="120" fill="#151312" ${O(4)}/><path d="M396 382 L464 382" stroke="#e8eef7" stroke-width="8" stroke-linecap="round"/>
+      <path d="M150 600 L330 540" stroke="#0f0d0c" stroke-width="18" stroke-linecap="round"/>
+      <rect x="160" y="650" width="90" height="110" fill="#050505" ${O(4)}/><rect x="450" y="650" width="90" height="110" fill="#050505" ${O(4)}/>
+      <path d="M300 1000 L300 760 Q350 720 400 760 L400 1000 Z" fill="#030303" ${O(4)}/>
+      <path d="M90 1000 Q360 976 620 1000 L620 1012 L90 1012 Z" fill="#dfe6f0"/>
+      <polygon points="412,850 300,760 400,1010 300,1000" fill="url(#flash)" opacity="0"/>
+      <ellipse cx="350" cy="880" rx="70" ry="90" fill="url(#gWhite)" opacity="${.18 * beamOn}"/>
+      </g>
+      <polygon points="412,842 430,540 580,610" fill="url(#flash)" opacity="${.7 * beamOn}"/><ellipse cx="500" cy="590" rx="70" ry="60" fill="url(#gWhite)" opacity="${.2 * beamOn}"/>
+      <g transform="translate(150 1000)">
+        <path d="M70 -60 L250 -150" stroke="#0b0e16" stroke-width="34" stroke-linecap="round"/><path d="M70 -60 L250 -150" stroke="#1b2540" stroke-width="24" stroke-linecap="round"/>
+        <rect x="236" y="-176" width="30" height="50" rx="6" fill="#2b2f37" ${O(3)} transform="rotate(-62 251 -151)"/>
+        <circle cx="262" cy="-160" r="10" fill="#fff8dc"/>
+        <path d="M-120 300 Q-130 0 -40 -60 L60 -60 Q150 0 140 300 Z" fill="#1b2540" ${O(5)}/>
+        <path d="M-124 110 Q-126 0 -40 -60 L60 -60 Q146 0 144 110 Z" fill="#b3202a"/>
+        <rect x="-128" y="96" width="276" height="20" fill="#e5ecf5"/>
+        <path d="M-120 300 Q-130 0 -40 -60 L60 -60 Q150 0 140 300" fill="none" ${O(5)}/>
+        <text x="10" y="40" text-anchor="middle" font-weight="900" font-size="34" fill="#fff" opacity=".9">112</text>
+        <path d="M-26 -60 L34 -60 L30 -88 L-22 -88 Z" fill="#b8876a"/>
+        <circle cx="4" cy="-130" r="58" fill="#c99a78" ${O(4)}/>
+        <path d="M-56 -124 Q-60 -192 4 -192 Q66 -192 62 -124 Q60 -100 50 -90 L-42 -90 Q-54 -100 -56 -124 Z" fill="#17171c" ${O(4)}/>
+        <ellipse cx="-54" cy="-122" rx="10" ry="16" fill="#c99a78" ${O(3)}/><ellipse cx="62" cy="-122" rx="10" ry="16" fill="#c99a78" ${O(3)}/>
+      </g>
+      <rect width="720" height="1280" fill="${lb ? '#1d4ed8' : '#dc2626'}" opacity=".13"/>
+      <ellipse cx="-60" cy="900" rx="420" ry="500" fill="url(#${lb ? 'gBlue' : 'gRed'})" opacity=".45"/>
+      <rect x="0" y="700" width="720" height="380" fill="#9fb0c8" opacity=".08" filter="url(#b30)"/>
+      ${snow(t, 150, -30, 21)}`;
+  },
+
+  hakan(p, t, sc) {
+    const pale = ease(clamp((p - .1) * 1.6));
+    const jit = (rnd(Math.floor(t * 24)) - .5) * 1.6 * pale;
+    return `<rect width="720" height="1280" fill="#151b28"/>
+      <circle cx="120" cy="300" r="70" fill="#ffcf87" opacity=".12" filter="url(#b16)"/><circle cx="600" cy="220" r="90" fill="#7fe3ff" opacity=".1" filter="url(#b16)"/><circle cx="560" cy="520" r="50" fill="#ffcf87" opacity=".1" filter="url(#b16)"/>
+      <path d="M40 1280 Q60 960 230 900 L490 900 Q660 960 680 1280 Z" fill="#6b6f78" ${O(5)}/>
+      <path d="M290 900 L360 1060 L430 900 Z" fill="#c9d6e6" ${O(4)}/><path d="M330 900 L360 960 L390 900" fill="#b8c6d8"/>
+      <path d="M150 1000 Q190 1180 200 1280 M570 1000 Q530 1180 520 1280" stroke="#585c64" stroke-width="5" fill="none"/>
+      <path d="M318 820 L402 820 L410 912 L310 912 Z" fill="#c8967a"/>
+      <ellipse cx="208" cy="600" rx="26" ry="44" fill="#d8a886" ${O(4)}/><ellipse cx="512" cy="600" rx="26" ry="44" fill="#d8a886" ${O(4)}/>
+      <ellipse cx="360" cy="590" rx="152" ry="182" fill="#d8a886" ${O(5)}/>
+      <path d="M212 560 Q206 420 270 400 Q250 450 252 520 Z M508 560 Q514 420 450 400 Q470 450 468 520 Z" fill="#c9ccd1" ${O(3)}/>
+      <path d="M262 408 Q360 380 458 408" fill="none" stroke="#c9ccd1" stroke-width="10" stroke-linecap="round" opacity=".8"/>
+      <path d="M290 470 Q360 458 430 470 M300 498 Q360 488 420 498" fill="none" stroke="#b07f63" stroke-width="3" opacity=".7"/>
+      <path d="M262 ${532 - 8 * pale} Q298 ${512 - 10 * pale} 334 ${528 - 8 * pale}" fill="none" stroke="#b9bcc2" stroke-width="13" stroke-linecap="round"/>
+      <path d="M386 ${528 - 8 * pale} Q422 ${512 - 10 * pale} 458 ${532 - 8 * pale}" fill="none" stroke="#b9bcc2" stroke-width="13" stroke-linecap="round"/>
+      <ellipse cx="298" cy="580" rx="${16 + 4 * pale}" ry="${12 + 5 * pale}" fill="#f5f5f2"/><ellipse cx="422" cy="580" rx="${16 + 4 * pale}" ry="${12 + 5 * pale}" fill="#f5f5f2"/>
+      <circle cx="298" cy="582" r="${8 - 2 * pale}" fill="#2b2420"/><circle cx="422" cy="582" r="${8 - 2 * pale}" fill="#2b2420"/>
+      <rect x="248" y="548" width="100" height="70" rx="16" fill="#bfe8ff" fill-opacity=".18" ${O(5, '#262626')}/>
+      <rect x="372" y="548" width="100" height="70" rx="16" fill="#bfe8ff" fill-opacity=".18" ${O(5, '#262626')}/>
+      <line x1="348" y1="576" x2="372" y2="576" stroke="#262626" stroke-width="5"/>
+      <polygon points="262,556 300,556 278,610 254,610" fill="#e0f6ff" opacity=".35"/><polygon points="386,556 424,556 402,610 378,610" fill="#e0f6ff" opacity=".35"/>
+      <path d="M352 600 Q340 650 346 670 Q360 682 376 670" fill="none" stroke="#a87458" stroke-width="5" stroke-linecap="round"/>
+      <path d="M286 640 Q300 690 290 730 M434 640 Q420 690 430 730" fill="none" stroke="#b07f63" stroke-width="3" opacity=".7"/>
+      <path d="M292 700 Q330 674 360 690 Q390 674 428 700 Q430 728 404 726 Q380 720 360 724 Q340 720 316 726 Q290 728 292 700 Z" fill="#c4c6cb" ${O(4)}/>
+      <ellipse cx="360" cy="${748 + 4 * pale}" rx="${22 + 6 * pale}" ry="${6 + 8 * pale}" fill="#4a2420" ${O(3)}/>
+      <rect width="720" height="1280" fill="#e8f4ff" opacity="${.12 * pale}"/>
+      <ellipse cx="-40" cy="700" rx="420" ry="620" fill="url(#gCyan)" opacity=".35"/>
+      <g transform="translate(${jit} 0)">
+        ${teaGlass(540, 1090, 1.5, t)}
+        <path d="M600 1280 Q600 1150 560 1110 Q520 1080 480 1100 L470 1140 Q500 1130 520 1150 Q540 1200 520 1280 Z" fill="#c8967a" ${O(4)}/>
+        <path d="M480 1050 Q460 1060 470 1080 L500 1084 M478 1084 Q458 1094 470 1114 L500 1116" fill="#c8967a" ${O(4)}/>
+      </g>`;
+  },
+
+  selin(p, t, sc) {
+    const segS = sc.segs.find(sg => sg.who === 'selin' && t >= sg.s && t <= sg.e);
+    const amp = segS ? clamp(envAt(TL.envVoice, t) * 1.2) : 0;
+    const nurOn = sc.segs.some(sg => sg.who === 'nur' && t >= sg.s - .2);
+    const blink = (t % 3.7) < .13 && !nurOn;
+    const wide = nurOn ? 4 : 0;
+    return `<rect width="720" height="1280" fill="#141a26"/>
+      <circle cx="110" cy="260" r="80" fill="#ffcf87" opacity=".14" filter="url(#b16)"/><circle cx="640" cy="380" r="110" fill="#7fe3ff" opacity=".14" filter="url(#b16)"/><circle cx="180" cy="620" r="60" fill="#ffcf87" opacity=".1" filter="url(#b16)"/>
+      <path d="M150 960 Q130 700 220 520 Q260 360 360 352 Q470 360 505 520 Q590 700 570 960 Z" fill="#4a2f22" ${O(5)}/>
+      <path d="M60 1280 Q80 1000 250 950 L470 950 Q640 1000 660 1280 Z" fill="#1e2a45" ${O(5)}/>
+      <path d="M300 950 L360 1010 L420 950" fill="none" stroke="#0b0e16" stroke-width="4"/><line x1="360" y1="1010" x2="360" y2="1280" stroke="#0b0e16" stroke-width="4"/>
+      <rect x="440" y="1060" width="90" height="46" rx="6" fill="#dc2626" ${O(3)}/><text x="485" y="1093" text-anchor="middle" font-weight="900" font-size="26" fill="#fff">112</text>
+      <path d="M318 860 L402 860 L408 960 L312 960 Z" fill="#d9a988"/>
+      <ellipse cx="360" cy="640" rx="132" ry="164" fill="#e9bc98" ${O(5)}/>
+      <path d="M232 560 Q236 410 360 400 Q492 404 492 560 Q470 470 400 450 Q330 470 290 470 Q250 500 232 560 Z" fill="#4a2f22" ${O(4)}/>
+      <path d="M300 460 Q330 500 300 540 M380 452 Q420 480 450 520" fill="none" stroke="#3a2419" stroke-width="3"/>
+      <path d="M278 ${574 - wide} Q306 ${560 - wide} 334 ${572 - wide}" fill="none" stroke="#4a2f22" stroke-width="8" stroke-linecap="round"/>
+      <path d="M386 ${572 - wide} Q414 ${560 - wide} 442 ${574 - wide}" fill="none" stroke="#4a2f22" stroke-width="8" stroke-linecap="round"/>
+      ${blink ? `<path d="M282 618 Q306 628 330 618 M390 618 Q414 628 438 618" fill="none" stroke="#2a1a14" stroke-width="5" stroke-linecap="round"/>` :
+        `<path d="M280 618 Q306 ${594 - wide} 332 618 Q306 ${636 + wide / 2} 280 618 Z" fill="#f7f2ec" ${O(3)}/><path d="M388 618 Q414 ${594 - wide} 440 618 Q414 ${636 + wide / 2} 388 618 Z" fill="#f7f2ec" ${O(3)}/>
+         <circle cx="308" cy="617" r="12" fill="#3b2a20"/><circle cx="416" cy="617" r="12" fill="#3b2a20"/><circle cx="308" cy="617" r="5" fill="#0b0b0b"/><circle cx="416" cy="617" r="5" fill="#0b0b0b"/>
+         <circle cx="312" cy="612" r="3.5" fill="#fff"/><circle cx="420" cy="612" r="3.5" fill="#fff"/>
+         <path d="M278 616 Q306 ${590 - wide} 334 614 M386 614 Q414 ${590 - wide} 442 616" fill="none" stroke="#1d120d" stroke-width="5" stroke-linecap="round"/>`}
+      <path d="M356 630 Q348 676 356 690 Q366 696 376 690" fill="none" stroke="#c48a6a" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="285" cy="690" rx="26" ry="14" fill="#e98b80" opacity=".25"/><ellipse cx="435" cy="690" rx="26" ry="14" fill="#e98b80" opacity=".25"/>
+      <path d="M326 742 Q360 ${752 + amp * 4} 394 742" fill="none" stroke="#a5544b" stroke-width="5" stroke-linecap="round"/>
+      ${amp > .08 ? `<ellipse cx="360" cy="${748 + amp * 6}" rx="${16 + amp * 6}" ry="${3 + amp * 14}" fill="#5a2622" ${O(3)}/>` : ''}
+      <path d="M226 600 Q222 360 360 350 Q498 360 494 600" fill="none" stroke="#22252c" stroke-width="16" stroke-linecap="round"/>
+      <ellipse cx="226" cy="630" rx="30" ry="48" fill="#1b1d23" ${O(4)}/><ellipse cx="226" cy="630" rx="16" ry="30" fill="#2c3039"/>
+      <ellipse cx="494" cy="630" rx="26" ry="44" fill="#1b1d23" ${O(4)}/>
+      <path d="M230 666 Q240 760 318 760" fill="none" stroke="#0b0e16" stroke-width="12" stroke-linecap="round"/><path d="M230 666 Q240 760 318 760" fill="none" stroke="#2c3039" stroke-width="6" stroke-linecap="round"/>
+      <ellipse cx="324" cy="758" rx="14" ry="10" fill="#111" ${O(3)}/>
+      <ellipse cx="760" cy="640" rx="420" ry="560" fill="url(#gCyan)" opacity=".38"/>`;
+  },
+
+  turn(p, t, sc) {
+    const pan = ease(clamp((t - sc.start) / 1.5)) * 480;
+    const stare = clamp((t - sc.start - 1.4) / .6);
+    return `<g transform="translate(${-pan} 0)">
+      <rect x="0" y="0" width="1200" height="1280" fill="url(#wallC)"/>
+      <rect x="0" y="860" width="1200" height="420" fill="#141a26"/>
+      <rect x="40" y="380" width="460" height="300" rx="14" fill="#14161c" ${O(5)}/>
+      <rect x="58" y="398" width="424" height="250" fill="url(#scrG)"/>
+      <text x="76" y="430" font-family="JetBrains Mono" font-weight="800" font-size="16" fill="#fca5a5">HAT 1 · KAYIT ●</text>
+      ${[...Array(40)].map((_, i) => { const a = clamp(envAt(TL.envLine, t - (40 - i) * .03)) * 70 + 3; return `<rect x="${76 + i * 10}" y="${523 - a}" width="6" height="${2 * a}" fill="#ef4444"/>`; }).join('')}
+      <rect x="58" y="398" width="424" height="250" fill="url(#scan)"/>
+      <rect x="230" y="680" width="80" height="80" fill="#14161c"/><rect x="0" y="760" width="560" height="110" fill="#2b303b" ${O(4)}/>
+      ${teaGlass(80, 770, .9)}
+      <ellipse cx="270" cy="520" rx="380" ry="320" fill="url(#gCyan)" opacity=".25"/>
+      <g transform="translate(820 0)">
+        <rect x="-160" y="850" width="320" height="460" rx="50" fill="#111318" ${O(4)}/>
+        <path d="M-200 1280 Q-190 980 -90 930 L90 930 Q190 980 200 1280 Z" fill="#1b2540" ${O(5)}/>
+        <path d="M-196 1120 Q-190 980 -90 930 L90 930 Q190 980 196 1120 Z" fill="#b3202a"/>
+        <rect x="-200" y="1100" width="400" height="24" fill="#d6dee8"/>
+        <path d="M-200 1280 Q-190 980 -90 930 L90 930 Q190 980 200 1280" fill="none" ${O(5)}/>
+        <path d="M-60 930 L0 1000 L60 930" fill="none" stroke="#0b0e16" stroke-width="4"/>
+        ${[...Array(14)].map((_, i) => `<circle cx="${-170 + i * 26}" cy="${950 + (i % 4) * 8}" r="${2 + (i % 2)}" fill="#fff"/>`).join('')}
+        <path d="M-44 840 L44 840 L50 935 L-50 935 Z" fill="#b8876a"/>
+        <ellipse cx="0" cy="620" rx="138" ry="168" fill="#c99a78" ${O(5)}/>
+        <ellipse cx="-136" cy="630" rx="22" ry="38" fill="#c99a78" ${O(4)}/><ellipse cx="136" cy="630" rx="22" ry="38" fill="#c99a78" ${O(4)}/>
+        <path d="M-136 590 Q-150 440 0 434 Q150 440 136 590 Q120 500 60 488 Q0 480 -60 488 Q-120 500 -136 590 Z" fill="#17171c" ${O(4)}/>
+        <path d="M-132 650 Q-128 790 0 800 Q128 790 132 650 Q120 700 90 712 Q40 740 0 736 Q-40 740 -90 712 Q-120 700 -132 650 Z" fill="#2a2522" ${O(4)}/>
+        <path d="M-62 700 Q0 682 62 700 Q40 714 0 710 Q-40 714 -62 700 Z" fill="#2a2522"/>
+        <line x1="-34" y1="728" x2="34" y2="728" stroke="#120f0e" stroke-width="5" stroke-linecap="round"/>
+        <path d="M-92 560 L-36 566 M36 566 L92 560" stroke="#17171c" stroke-width="12" stroke-linecap="round"/>
+        <ellipse cx="-60" cy="604" rx="${20 + 3 * stare}" ry="${13 + 4 * stare}" fill="#f2efe9"/><ellipse cx="60" cy="604" rx="${20 + 3 * stare}" ry="${13 + 4 * stare}" fill="#f2efe9"/>
+        <circle cx="-60" cy="605" r="${7 - 2 * stare}" fill="#0b0b0b"/><circle cx="60" cy="605" r="${7 - 2 * stare}" fill="#0b0b0b"/>
+        <path d="M-82 596 Q-60 ${584 - 4 * stare} -38 596 M38 596 Q60 ${584 - 4 * stare} 82 596" fill="none" stroke="#120f0e" stroke-width="4" stroke-linecap="round"/>
+        <path d="M-6 616 Q-14 652 -4 664 Q8 668 16 660" fill="none" stroke="#9a6b50" stroke-width="5" stroke-linecap="round"/>
+        ${teaGlass(-96, 1040, 1.25, t)}
+        <path d="M-150 1180 Q-150 1080 -120 1050 L-70 1050 Q-60 1070 -76 1080 L-112 1084 Q-110 1120 -100 1180 Z" fill="#c99a78" ${O(4)}/>
+        
+      </g>
+    </g>
+    <ellipse cx="0" cy="640" rx="380" ry="640" fill="url(#gCyan)" opacity="${.3 * (1 - pan / 480) + .12}"/>`;
+  },
+
+  black(p, t, sc) {
+    const lt = t - sc.start, beat = Math.max(0, Math.sin(((lt % .85) / .85) * Math.PI * 2)) ** 6;
+    return `<rect width="720" height="1280" fill="#000"/><ellipse cx="360" cy="640" rx="520" ry="760" fill="url(#gRed)" opacity="${.12 + .18 * beat}"/>`;
+  },
+
+  choice(p, t, sc) {
+    const lt = t - sc.start, c = TL.choice, b = clamp((lt - .9) / .5);
+    const cd = t - sc.narrEnd - .4, n = cd < 0 ? 5 : Math.max(1, 5 - Math.floor(cd)), ring = cd < 0 ? 0 : cd % 1;
+    const arc = (r, f) => { const a = f * 2 * Math.PI; return `M360 ${790 - r} A${r} ${r} 0 ${f > .5 ? 1 : 0} 1 ${360 + r * Math.sin(a)} ${790 - r * Math.cos(a)}`; };
+    const card = (x, col, icon, lines, op) => `<g opacity="${op}"><rect x="${x}" y="420" width="270" height="300" rx="22" fill="#0f1726" stroke="${col}" stroke-width="5"/>${icon}
+      <text x="${x + 135}" y="640" text-anchor="middle" font-weight="900" font-size="22" fill="#fff">${lines[0]}</text>
+      <text x="${x + 135}" y="672" text-anchor="middle" font-weight="900" font-size="20" fill="#fff">${lines[1]}</text></g>`;
+    const ic1 = `<g transform="translate(220 520) rotate(135)">${phoneIcon(0, 0, 1.25, '#fff')}</g><line x1="268" y1="478" x2="300" y2="510" stroke="#ef4444" stroke-width="8" stroke-linecap="round"/><line x1="300" y1="478" x2="268" y2="510" stroke="#ef4444" stroke-width="8" stroke-linecap="round"/>`;
+    const ic2 = `<path d="M440 470 h140 a16 16 0 0 1 16 16 v68 a16 16 0 0 1 -16 16 h-80 l-30 26 v-26 h-30 a16 16 0 0 1 -16 -16 v-68 a16 16 0 0 1 16 -16 Z" fill="none" stroke="#fff" stroke-width="7"/><text x="510" y="550" text-anchor="middle" font-weight="900" font-size="54" fill="#38bdf8">?</text>`;
+    return `<rect width="720" height="1280" fill="#0a0f1a"/>${snow(t, 50, -10, 3)}
+      <text x="360" y="260" text-anchor="middle" font-weight="900" font-size="66" fill="#fff">SEN OLSAN</text>
+      <text x="360" y="340" text-anchor="middle" font-weight="900" font-size="66" fill="#fff">NE YAPARDIN?</text>
+      ${card(80, '#ef4444', ic1, c.sol, 1)}${card(370, '#38bdf8', ic2, c.sag, .3 + .7 * b)}
+      ${cd >= -.2 ? `<circle cx="360" cy="790" r="40" fill="#0b1220" stroke="#2a3550" stroke-width="7"/><path d="${arc(40, Math.max(.001, ring))}" fill="none" stroke="#9cc9ff" stroke-width="7" stroke-linecap="round"/>
+        <text x="360" y="805" text-anchor="middle" font-weight="900" font-size="42" fill="#fff">${n}</text>` : ''}
+      <rect x="225" y="870" width="270" height="62" rx="31" fill="#9cc9ff"/><text x="360" y="912" text-anchor="middle" font-weight="900" font-size="27" fill="#0d1424">YORUMA YAZ ↓</text>
+      <rect x="200" y="952" width="320" height="56" rx="28" fill="none" stroke="#e6e9f2" stroke-width="3"/>
+      <text x="360" y="989" text-anchor="middle" font-weight="900" font-size="22" fill="#fff"><tspan fill="#ff4d6d">♥</tspan> BEĞEN · + TAKİP ET</text>
+      <text x="360" y="1210" text-anchor="middle" font-weight="800" font-size="20" fill="#7d879e" letter-spacing="1">${TL.title}</text>`;
+  }
+};
+
+function envAt(arr, t) { const i = Math.floor(t * 60); return i >= 0 && i < arr.length ? arr[i] : 0; }
+
+function waveScene(t, sc, second, cut) {
+  const cutW = cut ? sc.words.find(w => up(w.w).startsWith('KESİL')) : null;
+  const flat = cutW && t > cutW.s + .25;
+  const rz = sc.segs.find(sg => sg.who === 'rizaphone' && t >= sg.s - .1);
+  const col = rz ? '#ff4040' : '#5ad1ff';
+  const N = 64, bars = [];
+  for (let i = 0; i < N; i++) {
+    const tt = t - (N - i) * (1 / 30);
+    let a = clamp(envAt(TL.envLine, tt) * 1.05);
+    a = a * (0.55 + 0.45 * Math.abs(Math.sin(i * 1.7 + tt * 9))) + .015 + .01 * rnd(i + Math.floor(t * 20));
+    if (flat) a = .004;
+    bars.push(a);
+  }
+  const lt = t - sc.start, rec = Math.floor(t * 2) % 2;
+  const base = second ? 41 : (sc.stamp ? 12 : 3);
+  const tc = `03:00:${String(base + Math.floor(lt)).padStart(2, '0')}`;
+  return `<rect width="720" height="1280" fill="#06080d"/>
+    <rect x="0" y="420" width="720" height="440" fill="url(#grid)" opacity=".5"/>
+    <text x="40" y="380" font-family="JetBrains Mono" font-weight="800" font-size="20" fill="#7f93ab">ÇAĞRI KAYDI · HAT 1</text>
+    <text x="680" y="380" text-anchor="end" font-family="JetBrains Mono" font-weight="800" font-size="20" fill="#7f93ab">NUMARA GİZLİ</text>
+    <line x1="40" y1="640" x2="680" y2="640" stroke="#1f3346" stroke-width="2"/>
+    ${bars.map((a, i) => { const h = a * 190; return `<rect x="${44 + i * 10}" y="${f1(640 - h)}" width="6" height="${f1(Math.max(2, 2 * h))}" rx="3" fill="${col}" opacity="${.35 + .65 * (i / N)}"/>`; }).join('')}
+    <line x1="684" y1="430" x2="684" y2="850" stroke="${col}" stroke-width="2" opacity=".6"/>
+    ${rec && !flat ? `<circle cx="52" cy="900" r="9" fill="#ef4444"/>` : ''}
+    <text x="72" y="907" font-family="JetBrains Mono" font-weight="800" font-size="20" fill="${flat ? '#ef4444' : '#cbd5e1'}">${flat ? 'HAT KESİLDİ' : 'KAYIT'}</text>
+    <text x="680" y="907" text-anchor="end" font-family="JetBrains Mono" font-weight="800" font-size="20" fill="#cbd5e1">${tc}</text>
+    ${rz ? `<rect width="720" height="1280" fill="#ff0000" opacity="${.05 + .05 * Math.sin(t * 20)}"/>` : ''}`;
+}
+
+function officeScene(p, t, sc, riza) {
+  const [hh, mm] = (sc.clock || '02:59').split(':').map(Number);
+  const sec = (t - sc.start) * 6, ma = mm * 6 + sec / 60, ha = (hh % 12) * 30 + mm / 2;
+  const hand = (a, l, w, c) => `<line x1="590" y1="200" x2="${f1(590 + Math.sin(a * Math.PI / 180) * l)}" y2="${f1(200 - Math.cos(a * Math.PI / 180) * l)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+  let ticks = ''; for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; ticks += `<line x1="${f1(590 + Math.sin(a) * 44)}" y1="${f1(200 - Math.cos(a) * 44)}" x2="${f1(590 + Math.sin(a) * 52)}" y2="${f1(200 - Math.cos(a) * 52)}" stroke="#222" stroke-width="${i % 3 ? 2 : 4}"/>`; }
+  let blinds = ''; for (let i = 0; i < 6; i++) blinds += `<rect x="72" y="${172 + i * 16}" width="256" height="9" fill="#9aa3b5" ${O(1.5)}/>`;
+  const z = 1 + .04 * p;
+  const monitor = (x, y, w, h, k) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="#14161c" ${O(4)}/>
+      <rect x="${x + 8}" y="${y + 8}" width="${w - 16}" height="${h - 16}" fill="url(#scrG)"/>
+      <rect x="${x + 8}" y="${y + 8}" width="${w - 16}" height="16" fill="#0f2238"/>
+      ${[...Array(5)].map((_, i) => `<rect x="${x + 16}" y="${y + 34 + i * 18}" width="${(w - 40) * (.4 + rnd(i + k) * .5)}" height="8" rx="3" fill="#1d3b5c"/>`).join('')}
+      ${k === 1 ? `<path d="M${x + 16} ${y + h - 30} ${[...Array(12)].map((_, i) => `L${x + 16 + i * (w - 32) / 11} ${y + h - 30 - rnd(i + Math.floor(t * 3)) * 18}`).join(' ')}" fill="none" stroke="#5ad1ff" stroke-width="2"/>` : ''}`;
+  return `<g transform="translate(360 700) scale(${z}) translate(-360 -700)">
+    <rect width="720" height="840" fill="url(#wallC)"/>
+    <rect x="0" y="690" width="720" height="150" fill="#1e2636"/><line x1="0" y1="690" x2="720" y2="690" stroke="#0b0e16" stroke-width="4"/>
+    <rect x="0" y="840" width="720" height="440" fill="#121722"/>
+    <rect x="62" y="162" width="276" height="330" fill="#3b465c" ${O(4)}/>
+    <rect x="72" y="172" width="256" height="310" fill="#0a1222"/>
+    <svg x="72" y="172" width="256" height="310" viewBox="72 172 256 310">${snow(t, 40, -40, 31, 1280).replace(/cy="([\d.]+)"/g, (m, y) => `cy="${172 + (+y % 310)}"`).replace(/cx="([\d.-]+)"/g, (m, x) => `cx="${72 + (((+x) % 256) + 256) % 256}"`)}</svg>
+    ${blinds}<line x1="200" y1="172" x2="200" y2="482" stroke="#3b465c" stroke-width="6"/>
+    <circle cx="590" cy="200" r="58" fill="#e9e6dc" ${O(5)}/>${ticks}${hand(ha, 28, 6, '#151515')}${hand(ma, 42, 4, '#151515')}${hand(sec * 60 % 360, 46, 1.5, '#c0392b')}<circle cx="590" cy="200" r="4" fill="#151515"/>
+    <rect x="440" y="300" width="230" height="170" fill="#d9d2bf" ${O(4)}/>
+    <text x="555" y="328" text-anchor="middle" font-weight="900" font-size="16" fill="#334155">KARAAĞAÇ İLÇESİ</text>
+    <path d="M460 440 Q520 380 560 400 T650 350" fill="none" stroke="#3b82f6" stroke-width="4"/><path d="M470 360 L660 450 M520 340 L540 460" stroke="#94a3b8" stroke-width="3"/><circle cx="600" cy="380" r="6" fill="#dc2626"/>
+    <rect x="200" y="22" width="320" height="18" rx="4" fill="#eaf6ff"/>
+    <ellipse cx="360" cy="40" rx="300" ry="90" fill="#eaf6ff" opacity=".12" filter="url(#b16)"/>
+    <rect x="470" y="590" width="250" height="22" fill="#3e352d" ${O(3)}/><rect x="490" y="612" width="12" height="80" fill="#2a241f"/><rect x="690" y="612" width="12" height="80" fill="#2a241f"/>
+    <rect x="500" y="540" width="66" height="48" rx="4" fill="#14161c" ${O(3)}/><rect x="506" y="546" width="54" height="34" fill="#13314a"/>
+    ${hakanSmall(630, 548, .85, t)}
+    <rect x="-20" y="770" width="760" height="40" fill="#2b303b" ${O(4)}/><rect x="-20" y="810" width="760" height="70" fill="#1e222b"/>
+    ${monitor(70, 600, 180, 140, 0)}${monitor(260, 570, 220, 170, 1)}${monitor(492, 628, 150, 112, 2)}
+    <rect x="350" y="740" width="40" height="30" fill="#14161c"/>
+    ${teaGlass(620, 778, .7, t)}
+    <ellipse cx="360" cy="660" rx="330" ry="200" fill="url(#gCyan)" opacity=".22"/>
+    ${riza ? rizaSide(560, 840, 1.0, t) : ''}
+    <rect x="${riza ? 170 : 220}" y="900" width="${riza ? 230 : 280}" height="400" rx="40" fill="#101217" ${O(4)}/>
+    ${selinBack(riza ? 285 : 360, 820, riza ? 1.0 : 1.08, t)}
+  </g>`;
+}
+
+/* ---------- altyazı, kutu, kompozisyon ---------- */
+function captionFor(sc, t) {
+  const ws = sc.words; if (!ws.length || sc.nocap) return '';
+  const chunks = []; let cur = [];
+  ws.forEach((w, i) => {
+    cur.push(i);
+    const len = cur.reduce((a, j) => a + ws[j].w.length, 0);
+    const nextGap = i + 1 < ws.length ? ws[i + 1].s - w.e : 0;
+    if (cur.length >= 3 || /[.,?!:…]$/.test(w.w) || len > 14 || nextGap > .3) { chunks.push(cur); cur = []; }
+  });
+  if (cur.length) chunks.push(cur);
+  let ci = -1; chunks.forEach((c, k) => { if (t >= ws[c[0]].s - .05) ci = k; });
+  if (ci < 0) return '';
+  const c = chunks[ci], last = ws[c[c.length - 1]];
+  if (t > last.e + .7) return '';
+  return c.map(j => { const w = ws[j]; const txt = up(w.w.replace(/[.,?!:;…]+$/, '').replace(/^\.+/, ''));
+    return `<span class="${w.red ? 'red' : (t >= w.s - .03 ? 'on' : '')}">${txt}</span>`; }).join(' ');
+}
+
+const grainEl = document.getElementById('grain');
+(() => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'); const d = g.createImageData(256, 256);
+  for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+  g.putImageData(d, 0, 0); grainEl.style.backgroundImage = `url(${c.toDataURL()})`; })();
+
+function render(t) {
+  const scs = TL.scenes;
+  let sc = scs[scs.length - 1], idx = scs.length - 1;
+  for (let i = 0; i < scs.length; i++) if (t < scs[i].end) { sc = scs[i]; idx = i; break; }
+  const p = clamp((t - sc.start) / (sc.end - sc.start));
+  const push = ['ext', 'ruin', 'road', 'black', 'choice', 'turn', 'office', 'office_riza', 'map'].includes(sc.v) ? 0 : .045 * p;
+  const shake = sc.v === 'turn' && t - sc.start < .25 ? (rnd(Math.floor(t * 50)) - .5) * 14 : 0;
+  const pushExt = sc.v === 'ext' || sc.v === 'ruin' ? .07 * p : 0;
+  const z = 1 + push + pushExt;
+  document.getElementById('art').innerHTML = DEFS +
+    `<g transform="translate(${360 + shake} 640) scale(${z}) translate(-360 -640)">${S[sc.v](p, t, sc)}</g>
+     <rect width="720" height="1280" fill="url(#vig)"/>`;
+  const head = document.getElementById('head');
+  const hp = clamp((t - sc.start - .2) / .3);
+  head.textContent = sc.head ? up(sc.head) : ''; head.style.opacity = hp; head.style.transform = `scale(${.85 + .15 * hp})`;
+  const box = document.getElementById('box');
+  const seg = [...sc.segs].reverse().find(sg => sg.who !== 'anlatici' && t >= sg.s - .1);
+  if (seg) {
+    const live = t <= seg.e + .1;
+    box.style.opacity = clamp((t - seg.s + .1) / .2);
+    box.innerHTML = `<div class="who" style="color:${seg.color}"><i style="background:${live && Math.floor(t * 3) % 2 ? seg.color : 'transparent'};border:2px solid ${seg.color}"></i>${seg.label}</div>
+      <div class="txt" style="border-color:${seg.color}">“${seg.text}”</div>`;
+  } else box.innerHTML = '';
+  document.getElementById('cap').innerHTML = captionFor(sc, t);
+  document.getElementById('stamp').textContent = sc.stamp ? '◷ ' + sc.stamp : '';
+  grainEl.style.backgroundPosition = `${Math.floor(rnd(Math.floor(t * 24)) * 256)}px ${Math.floor(rnd(Math.floor(t * 24) + 9) * 256)}px`;
+  const d0 = t - sc.start, d1 = sc.end - t;
+  let f = 0;
+  if (idx > 0 && d0 < .12) f = 1 - d0 / .12;
+  if (idx < scs.length - 1 && d1 < .12) f = Math.max(f, 1 - d1 / .12);
+  if (idx === 0 && d0 < .5) f = 1 - d0 / .5;
+  if (idx === scs.length - 1 && d1 < .9) f = Math.max(f, 1 - d1 / .9);
+  if (t > TL.total - .5) f = 1;
+  document.getElementById('fade').style.opacity = clamp(f);
+  const fl = (['screen_ring', 'turn', 'wave2'].includes(sc.v) && d0 < .18) ? (1 - d0 / .18) * .5 : 0;
+  document.getElementById('flash').style.opacity = fl;
+}
+window.setTL = tl => { TL = tl; };
+</script></body></html>
